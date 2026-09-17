@@ -13,6 +13,10 @@ import {
   Plus,
   ArrowUpDown,
   Download,
+  Wallet,
+  Utensils,
+  TrendingUp,
+  Receipt,
 } from 'lucide-react';
 
 interface HistoryPageProps {
@@ -75,6 +79,23 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
         return sortOrder === 'desc' ? timeB - timeA : timeA - timeB;
       });
   }, [meals, selectedMonth, selectedMealType, selectedPaidBy, selectedEater, searchTerm, sortOrder, members]);
+
+  // Summary calculations for top cards
+  const totalExpense = useMemo(() => {
+    return filteredMeals.reduce((acc, m) => acc + (Number(m.total_amount) || 0), 0);
+  }, [filteredMeals]);
+
+  const lunchCount = useMemo(() => {
+    return filteredMeals.filter((m) => m.meal_type === 'lunch').length;
+  }, [filteredMeals]);
+
+  const dinnerCount = useMemo(() => {
+    return filteredMeals.filter((m) => m.meal_type === 'dinner').length;
+  }, [filteredMeals]);
+
+  const averageMealCost = useMemo(() => {
+    return filteredMeals.length > 0 ? Math.round(totalExpense / filteredMeals.length) : 0;
+  }, [filteredMeals, totalExpense]);
 
   const getMemberName = (id: string) => {
     return members.find((m) => m.id === id)?.name || 'Unknown';
@@ -143,6 +164,93 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
             <Plus className="w-4 h-4" />
             <span>+ Add Entry</span>
           </button>
+        </div>
+      </div>
+
+      {/* Top Expense & Summary Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 1. Total Expense */}
+        <div className="bg-white dark:bg-slate-800/90 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs hover:shadow-md transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              Total Expense
+            </span>
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <Wallet className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              {formatCurrency(totalExpense, currency)}
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              {selectedMonth === 'all' ? 'All-time total expense' : 'Total for selected filter'}
+            </p>
+          </div>
+        </div>
+
+        {/* 2. Total Meals */}
+        <div className="bg-white dark:bg-slate-800/90 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs hover:shadow-md transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              Total Meals
+            </span>
+            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+              <Utensils className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              {filteredMeals.length}
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="text-amber-600 dark:text-amber-400 font-semibold">{lunchCount} Lunch</span>
+              <span>•</span>
+              <span className="text-indigo-600 dark:text-indigo-400 font-semibold">{dinnerCount} Dinner</span>
+            </p>
+          </div>
+        </div>
+
+        {/* 3. Average Meal Cost */}
+        <div className="bg-white dark:bg-slate-800/90 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs hover:shadow-md transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              Average / Meal
+            </span>
+            <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              {formatCurrency(averageMealCost, currency)}
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Average cost per meal entry
+            </p>
+          </div>
+        </div>
+
+        {/* 4. Active Scope */}
+        <div className="bg-white dark:bg-slate-800/90 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs hover:shadow-md transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              Filter Scope
+            </span>
+            <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+              <Receipt className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">
+              {selectedMonth === 'all'
+                ? 'All Recorded Time'
+                : new Date(selectedMonth + '-01T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">
+              {selectedPaidBy !== 'all' ? `Payer: ${getMemberName(selectedPaidBy)}` : 'All payers included'}
+            </p>
+          </div>
         </div>
       </div>
 
