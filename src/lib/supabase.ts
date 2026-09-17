@@ -1,9 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Get credentials from env or runtime localStorage override
+const DEFAULT_URL = 'https://gritddcohssfytfuqmec.supabase.co';
+const DEFAULT_KEY = 'sb_publishable_RxyJ8ppRW3L5L-FZUsSmpA_eEKSMtub';
+
+// Get credentials from env or built-in defaults or runtime override
 export const getSupabaseConfig = () => {
-  const envUrl = import.meta.env.VITE_SUPABASE_URL || '';
-  const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+  const envUrl = import.meta.env.VITE_SUPABASE_URL || DEFAULT_URL;
+  const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_KEY;
 
   const storedUrl = localStorage.getItem('mealmates_supabase_url') || '';
   const storedKey = localStorage.getItem('mealmates_supabase_anon_key') || '';
