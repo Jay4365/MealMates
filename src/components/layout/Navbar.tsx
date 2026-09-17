@@ -7,7 +7,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenAddMeal }) => {
-  const { user, group, theme, toggleTheme, isSupabaseConnected } = useApp();
+  const { user, group, theme, toggleTheme, isSupabaseConnected, members } = useApp();
 
   return (
     <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
@@ -69,14 +69,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAddMeal }) => {
             {/* User Profile avatar */}
             <div className="flex items-center gap-2 pl-1 border-l border-slate-200 dark:border-slate-800">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-                {user?.name?.charAt(0).toUpperCase() || 'J'}
+                {user?.name?.charAt(0).toUpperCase() || (members[0]?.name ? members[0].name.charAt(0).toUpperCase() : 'R')}
               </div>
               <div className="hidden xl:block text-left text-xs leading-tight">
                 <span className="block font-semibold text-slate-800 dark:text-slate-200">
-                  {user?.name || 'Jay'}
+                  {user?.name || members[0]?.name || 'Roommate'}
                 </span>
                 <span className="text-slate-400 dark:text-slate-500 text-[10px]">
-                  Room Admin
+                  Roommate
                 </span>
               </div>
             </div>

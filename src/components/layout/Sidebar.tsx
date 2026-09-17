@@ -25,7 +25,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectTab,
   onOpenAddMeal,
 }) => {
-  const { user, group, isSupabaseConnected } = useApp();
+  const { user, group, isSupabaseConnected, members } = useApp();
 
   const navItems = [
     {
@@ -152,14 +152,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center justify-between pt-1">
           <div className="flex items-center gap-2.5 truncate">
             <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
-              {user?.name?.charAt(0) || 'U'}
+              {user?.name?.charAt(0) || members[0]?.name?.charAt(0) || 'U'}
             </div>
             <div className="truncate">
               <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
-                {user?.name || 'Jay'}
+                {user?.name || members[0]?.name || 'Roommate'}
               </p>
               <p className="text-[10px] text-slate-400 truncate">
-                {user?.email || 'jay@mealmates.app'}
+                {user?.email || (members[0]?.name ? `${members[0].name.toLowerCase()}@room` : 'room@mealmates')}
               </p>
             </div>
           </div>

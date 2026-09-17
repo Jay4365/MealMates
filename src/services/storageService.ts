@@ -2,7 +2,7 @@ import type { Group, GroupMember, Meal, SettlementRecord, User } from '../types'
 import { supabase, getSupabaseConfig } from '../lib/supabase';
 import { getAvatarColor } from '../utils/calculations';
 
-// Local storage keys
+// Local storage keys (used as fallback or for caching)
 const STORAGE_KEYS = {
   USER: 'mealmates_user',
   GROUP: 'mealmates_active_group',
@@ -11,150 +11,28 @@ const STORAGE_KEYS = {
   SETTLEMENTS: 'mealmates_settlements',
 };
 
-// Default seed data based on user specification
-const DEFAULT_USER: User = {
-  id: 'user-jay',
-  email: 'jay@mealmates.app',
-  name: 'Jay',
-};
-
-const DEFAULT_GROUP: Group = {
-  id: 'group-our-room',
-  name: 'Our Room',
-  currency: '₹',
-  owner_id: 'user-jay',
-  created_at: '2026-09-01T00:00:00Z',
-};
-
-const DEFAULT_MEMBERS: GroupMember[] = [
-  { id: 'm-jay', group_id: 'group-our-room', name: 'Jay', user_id: 'user-jay', avatar_color: '#10B981', is_active: true, created_at: '2026-09-01T00:00:00Z' },
-  { id: 'm-aniket', group_id: 'group-our-room', name: 'Aniket', user_id: null, avatar_color: '#3B82F6', is_active: true, created_at: '2026-09-01T00:00:00Z' },
-  { id: 'm-gautam', group_id: 'group-our-room', name: 'Gautam', user_id: null, avatar_color: '#F59E0B', is_active: true, created_at: '2026-09-01T00:00:00Z' },
-  { id: 'm-rohit', group_id: 'group-our-room', name: 'Rohit', user_id: null, avatar_color: '#EC4899', is_active: true, created_at: '2026-09-01T00:00:00Z' },
-  { id: 'm-parth', group_id: 'group-our-room', name: 'Parth', user_id: null, avatar_color: '#8B5CF6', is_active: true, created_at: '2026-09-01T00:00:00Z' },
-];
-
-/**
- * Seed meals for September 2026 that yield the exact balances requested:
- * Jay: -₹320
- * Aniket: +₹210
- * Gautam: +₹150
- * Rohit: -₹80
- * Parth: +₹40
- */
-const DEFAULT_MEALS: Meal[] = [
-  {
-    id: 'meal-sep15-lunch',
-    group_id: 'group-our-room',
-    date: '2026-09-15',
-    meal_type: 'lunch',
-    total_amount: 400,
-    paid_by: 'm-jay',
-    notes: 'Paneer Thali and Rotis',
-    eater_ids: ['m-jay', 'm-aniket', 'm-gautam', 'm-parth'],
-    created_at: '2026-09-15T13:30:00Z',
-  },
-  {
-    id: 'meal-sep15-dinner',
-    group_id: 'group-our-room',
-    date: '2026-09-15',
-    meal_type: 'dinner',
-    total_amount: 500,
-    paid_by: 'm-aniket',
-    notes: 'Biryani Feast for everyone',
-    eater_ids: ['m-jay', 'm-aniket', 'm-gautam', 'm-rohit', 'm-parth'],
-    created_at: '2026-09-15T21:00:00Z',
-  },
-  {
-    id: 'meal-sep14-dinner',
-    group_id: 'group-our-room',
-    date: '2026-09-14',
-    meal_type: 'dinner',
-    total_amount: 450,
-    paid_by: 'm-gautam',
-    notes: 'Dal Makhani & Naan',
-    eater_ids: ['m-jay', 'm-aniket', 'm-gautam', 'm-rohit', 'm-parth'],
-    created_at: '2026-09-14T20:45:00Z',
-  },
-  {
-    id: 'meal-sep14-lunch',
-    group_id: 'group-our-room',
-    date: '2026-09-14',
-    meal_type: 'lunch',
-    total_amount: 320,
-    paid_by: 'm-parth',
-    notes: 'South Indian Dosa Platter',
-    eater_ids: ['m-jay', 'm-aniket', 'm-gautam', 'm-parth'],
-    created_at: '2026-09-14T13:15:00Z',
-  },
-  {
-    id: 'meal-sep13-dinner',
-    group_id: 'group-our-room',
-    date: '2026-09-13',
-    meal_type: 'dinner',
-    total_amount: 550,
-    paid_by: 'm-aniket',
-    notes: 'Weekend Pasta & Garlic Bread',
-    eater_ids: ['m-jay', 'm-aniket', 'm-gautam', 'm-rohit', 'm-parth'],
-    created_at: '2026-09-13T21:15:00Z',
-  },
-  {
-    id: 'meal-sep12-dinner',
-    group_id: 'group-our-room',
-    date: '2026-09-12',
-    meal_type: 'dinner',
-    total_amount: 480,
-    paid_by: 'm-gautam',
-    notes: 'Special Rajma Chawal',
-    eater_ids: ['m-jay', 'm-aniket', 'm-gautam', 'm-rohit'],
-    created_at: '2026-09-12T20:30:00Z',
-  },
-  {
-    id: 'meal-sep11-lunch',
-    group_id: 'group-our-room',
-    date: '2026-09-11',
-    meal_type: 'lunch',
-    total_amount: 350,
-    paid_by: 'm-jay',
-    notes: 'Healthy salad & wraps',
-    eater_ids: ['m-jay', 'm-aniket', 'm-rohit', 'm-parth', 'm-gautam'],
-    created_at: '2026-09-11T13:00:00Z',
-  },
-  {
-    id: 'meal-sep10-dinner',
-    group_id: 'group-our-room',
-    date: '2026-09-10',
-    meal_type: 'dinner',
-    total_amount: 400,
-    paid_by: 'm-rohit',
-    notes: 'Veg Korma & Jeera Rice',
-    eater_ids: ['m-jay', 'm-aniket', 'm-gautam', 'm-rohit', 'm-parth'],
-    created_at: '2026-09-10T20:45:00Z',
-  },
-];
-
 class StorageService {
   private listeners: (() => void)[] = [];
+  private realtimeChannelInitialized = false;
 
   constructor() {
-    this.initLocalStorage();
+    this.initRealtime();
   }
 
-  private initLocalStorage() {
-    if (!localStorage.getItem(STORAGE_KEYS.USER)) {
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(DEFAULT_USER));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.GROUP)) {
-      localStorage.setItem(STORAGE_KEYS.GROUP, JSON.stringify(DEFAULT_GROUP));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.MEMBERS)) {
-      localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(DEFAULT_MEMBERS));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.MEALS)) {
-      localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(DEFAULT_MEALS));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.SETTLEMENTS)) {
-      localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify([]));
+  private initRealtime() {
+    const { isConfigured } = getSupabaseConfig();
+    if (isConfigured && supabase && !this.realtimeChannelInitialized) {
+      try {
+        supabase
+          .channel('schema-db-changes')
+          .on('postgres_changes', { event: '*', schema: 'public' }, () => {
+            this.notify();
+          })
+          .subscribe();
+        this.realtimeChannelInitialized = true;
+      } catch (err) {
+        console.warn('Realtime subscription setup notice:', err);
+      }
     }
   }
 
@@ -191,7 +69,7 @@ class StorageService {
       }
     }
     const raw = localStorage.getItem(STORAGE_KEYS.USER);
-    return raw ? JSON.parse(raw) : DEFAULT_USER;
+    return raw ? JSON.parse(raw) : null;
   }
 
   public async setCurrentUser(user: User | null): Promise<void> {
@@ -207,7 +85,7 @@ class StorageService {
   public async getActiveGroup(): Promise<Group> {
     const { isConfigured } = getSupabaseConfig();
     if (isConfigured && supabase) {
-      const { data } = await supabase.from('groups').select('*').limit(1).single();
+      const { data } = await supabase.from('groups').select('*').limit(1).maybeSingle();
       if (data) {
         return {
           id: data.id,
@@ -217,9 +95,35 @@ class StorageService {
           created_at: data.created_at,
         };
       }
+      // If no group exists in Supabase, create one dynamically
+      const { data: newGroup } = await supabase.from('groups').insert({
+        name: 'Our Room',
+        currency: '₹',
+      }).select().single();
+
+      if (newGroup) {
+        return {
+          id: newGroup.id,
+          name: newGroup.name,
+          currency: newGroup.currency || '₹',
+          owner_id: newGroup.owner_id,
+          created_at: newGroup.created_at,
+        };
+      }
     }
+
     const raw = localStorage.getItem(STORAGE_KEYS.GROUP);
-    return raw ? JSON.parse(raw) : DEFAULT_GROUP;
+    if (raw) return JSON.parse(raw);
+
+    const fallbackGroup: Group = {
+      id: 'group-default',
+      name: 'Our Room',
+      currency: '₹',
+      owner_id: 'owner',
+      created_at: new Date().toISOString(),
+    };
+    localStorage.setItem(STORAGE_KEYS.GROUP, JSON.stringify(fallbackGroup));
+    return fallbackGroup;
   }
 
   public async updateActiveGroup(updates: Partial<Group>): Promise<Group> {
@@ -244,12 +148,16 @@ class StorageService {
     const { isConfigured } = getSupabaseConfig();
     if (isConfigured && supabase) {
       const group = await this.getActiveGroup();
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('group_members')
         .select('*')
         .eq('group_id', group.id)
         .order('created_at', { ascending: true });
-      if (data && data.length > 0) {
+
+      if (error) {
+        console.error('Failed to fetch members from Supabase:', error);
+      }
+      if (data) {
         return data.map((d) => ({
           id: d.id,
           group_id: d.group_id,
@@ -260,9 +168,11 @@ class StorageService {
           created_at: d.created_at,
         }));
       }
+      return [];
     }
+
     const raw = localStorage.getItem(STORAGE_KEYS.MEMBERS);
-    return raw ? JSON.parse(raw) : DEFAULT_MEMBERS;
+    return raw ? JSON.parse(raw) : [];
   }
 
   public async addMember(name: string): Promise<GroupMember> {
@@ -285,35 +195,57 @@ class StorageService {
         avatar_color: newMember.avatar_color,
         is_active: true,
       }).select().single();
-      if (!error && data) {
+
+      if (error) {
+        console.error('Failed to add member to Supabase:', error);
+        throw error;
+      }
+      if (data) {
         newMember.id = data.id;
       }
     }
 
     const members = await this.getMembers();
-    members.push(newMember);
-    localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(members));
+    if (!members.some((m) => m.id === newMember.id)) {
+      members.push(newMember);
+      localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(members));
+    }
     this.notify();
     return newMember;
   }
 
   public async updateMember(id: string, updates: Partial<GroupMember>): Promise<GroupMember> {
+    const { isConfigured } = getSupabaseConfig();
+    if (isConfigured && supabase) {
+      const { data, error } = await supabase
+        .from('group_members')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Failed to update member in Supabase:', error);
+        throw error;
+      }
+      this.notify();
+      return {
+        id: data.id,
+        group_id: data.group_id,
+        name: data.name,
+        user_id: data.user_id,
+        avatar_color: data.avatar_color || getAvatarColor(data.name),
+        is_active: data.is_active,
+        created_at: data.created_at,
+      };
+    }
+
     const members = await this.getMembers();
     const index = members.findIndex((m) => m.id === id);
     if (index === -1) throw new Error('Member not found');
 
     const updated = { ...members[index], ...updates };
     members[index] = updated;
-
-    const { isConfigured } = getSupabaseConfig();
-    if (isConfigured && supabase) {
-      await supabase.from('group_members').update({
-        name: updated.name,
-        is_active: updated.is_active,
-        avatar_color: updated.avatar_color,
-      }).eq('id', id);
-    }
-
     localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(members));
     this.notify();
     return updated;
@@ -322,25 +254,26 @@ class StorageService {
   public async deleteMember(id: string): Promise<{ success: boolean; reason?: string }> {
     const meals = await this.getMeals();
     const hasMeals = meals.some((m) => m.paid_by === id || m.eater_ids.includes(id));
-    
+
     if (hasMeals) {
-      // Deactivate instead of hard deleting to preserve historical meal data
       await this.updateMember(id, { is_active: false });
       return {
         success: true,
-        reason: 'Member marked as inactive because they have existing meal records.',
+        reason: 'Roommate was marked inactive instead of deleted to preserve previous meal records.',
       };
     }
 
-    const members = await this.getMembers();
-    const filtered = members.filter((m) => m.id !== id);
-
     const { isConfigured } = getSupabaseConfig();
     if (isConfigured && supabase) {
-      await supabase.from('group_members').delete().eq('id', id);
+      const { error } = await supabase.from('group_members').delete().eq('id', id);
+      if (error) {
+        console.error('Failed to delete member in Supabase:', error);
+        throw error;
+      }
     }
 
-    localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(filtered));
+    const members = (await this.getMembers()).filter((m) => m.id !== id);
+    localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(members));
     this.notify();
     return { success: true };
   }
@@ -350,7 +283,7 @@ class StorageService {
     const { isConfigured } = getSupabaseConfig();
     if (isConfigured && supabase) {
       const group = await this.getActiveGroup();
-      const { data: mealsData } = await supabase
+      const { data: mealsData, error } = await supabase
         .from('meals')
         .select(`
           *,
@@ -359,7 +292,11 @@ class StorageService {
         .eq('group_id', group.id)
         .order('date', { ascending: false });
 
-      if (mealsData && mealsData.length > 0) {
+      if (error) {
+        console.error('Failed to fetch meals from Supabase:', error);
+      }
+
+      if (mealsData) {
         return mealsData.map((m) => ({
           id: m.id,
           group_id: m.group_id,
@@ -367,15 +304,17 @@ class StorageService {
           meal_type: m.meal_type,
           total_amount: Number(m.total_amount),
           paid_by: m.paid_by,
-          notes: m.notes,
+          notes: m.notes || '',
           created_by: m.created_by,
           created_at: m.created_at,
           eater_ids: m.meal_members ? m.meal_members.map((mm: { member_id: string }) => mm.member_id) : [],
         }));
       }
+      return [];
     }
+
     const raw = localStorage.getItem(STORAGE_KEYS.MEALS);
-    return raw ? JSON.parse(raw) : DEFAULT_MEALS;
+    return raw ? JSON.parse(raw) : [];
   }
 
   public async addMeal(mealData: Omit<Meal, 'id' | 'created_at' | 'group_id'>): Promise<Meal> {
@@ -398,30 +337,71 @@ class StorageService {
         notes: newMeal.notes,
       }).select().single();
 
-      if (!error && data) {
-        newMeal.id = data.id;
-        const sharePerPerson = newMeal.total_amount / (newMeal.eater_ids.length || 1);
-        const mealMembers = newMeal.eater_ids.map((eaterId) => ({
-          meal_id: data.id,
-          member_id: eaterId,
-          share_amount: Math.round(sharePerPerson * 100) / 100,
-        }));
-        await supabase.from('meal_members').insert(mealMembers);
+      if (error) {
+        console.error('Supabase addMeal error:', error);
+        throw error;
       }
+
+      if (data) {
+        newMeal.id = data.id;
+        if (newMeal.eater_ids.length > 0) {
+          const sharePerPerson = newMeal.total_amount / newMeal.eater_ids.length;
+          const mealMembers = newMeal.eater_ids.map((eaterId) => ({
+            meal_id: data.id,
+            member_id: eaterId,
+            share_amount: Math.round(sharePerPerson * 100) / 100,
+          }));
+          const { error: mmErr } = await supabase.from('meal_members').insert(mealMembers);
+          if (mmErr) console.error('Failed to insert meal_members:', mmErr);
+        }
+      }
+      this.notify();
+      return newMeal;
     }
 
     const meals = await this.getMeals();
-    // Prepend to maintain newest first
     meals.unshift(newMeal);
-    // Sort by date descending
     meals.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
     localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(meals));
     this.notify();
     return newMeal;
   }
 
   public async updateMeal(id: string, mealData: Partial<Meal>): Promise<Meal> {
+    const { isConfigured } = getSupabaseConfig();
+    if (isConfigured && supabase) {
+      const { error } = await supabase
+        .from('meals')
+        .update({
+          date: mealData.date,
+          meal_type: mealData.meal_type,
+          total_amount: mealData.total_amount,
+          paid_by: mealData.paid_by,
+          notes: mealData.notes,
+        })
+        .eq('id', id);
+
+      if (error) {
+        console.error('Failed to update meal in Supabase:', error);
+        throw error;
+      }
+
+      if (mealData.eater_ids && mealData.total_amount) {
+        await supabase.from('meal_members').delete().eq('meal_id', id);
+        const sharePerPerson = mealData.total_amount / (mealData.eater_ids.length || 1);
+        const mealMembers = mealData.eater_ids.map((eaterId) => ({
+          meal_id: id,
+          member_id: eaterId,
+          share_amount: Math.round(sharePerPerson * 100) / 100,
+        }));
+        await supabase.from('meal_members').insert(mealMembers);
+      }
+
+      this.notify();
+      const updatedList = await this.getMeals();
+      return updatedList.find((m) => m.id === id) || (mealData as Meal);
+    }
+
     const meals = await this.getMeals();
     const index = meals.findIndex((m) => m.id === id);
     if (index === -1) throw new Error('Meal not found');
@@ -429,51 +409,58 @@ class StorageService {
     const updated: Meal = { ...meals[index], ...mealData };
     meals[index] = updated;
     meals.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    const { isConfigured } = getSupabaseConfig();
-    if (isConfigured && supabase) {
-      await supabase.from('meals').update({
-        date: updated.date,
-        meal_type: updated.meal_type,
-        total_amount: updated.total_amount,
-        paid_by: updated.paid_by,
-        notes: updated.notes,
-      }).eq('id', id);
-
-      if (updated.eater_ids) {
-        // Delete old and re-insert
-        await supabase.from('meal_members').delete().eq('meal_id', id);
-        const sharePerPerson = updated.total_amount / (updated.eater_ids.length || 1);
-        const mealMembers = updated.eater_ids.map((eaterId) => ({
-          meal_id: id,
-          member_id: eaterId,
-          share_amount: Math.round(sharePerPerson * 100) / 100,
-        }));
-        await supabase.from('meal_members').insert(mealMembers);
-      }
-    }
-
     localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(meals));
     this.notify();
     return updated;
   }
 
   public async deleteMeal(id: string): Promise<void> {
-    const meals = await this.getMeals();
-    const filtered = meals.filter((m) => m.id !== id);
-
     const { isConfigured } = getSupabaseConfig();
     if (isConfigured && supabase) {
       await supabase.from('meal_members').delete().eq('meal_id', id);
-      await supabase.from('meals').delete().eq('id', id);
+      const { error } = await supabase.from('meals').delete().eq('id', id);
+      if (error) {
+        console.error('Failed to delete meal in Supabase:', error);
+        throw error;
+      }
+      this.notify();
+      return;
     }
 
-    localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(filtered));
+    const meals = (await this.getMeals()).filter((m) => m.id !== id);
+    localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(meals));
     this.notify();
   }
 
-  // --- Settlements Methods ---
+  // --- Settlement Methods ---
   public async getSettlements(): Promise<SettlementRecord[]> {
+    const { isConfigured } = getSupabaseConfig();
+    if (isConfigured && supabase) {
+      const group = await this.getActiveGroup();
+      const { data, error } = await supabase
+        .from('settlements')
+        .select('*')
+        .eq('group_id', group.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Failed to fetch settlements from Supabase:', error);
+      }
+      if (data) {
+        return data.map((s) => ({
+          id: s.id,
+          group_id: s.group_id,
+          from_member_id: s.from_member_id,
+          to_member_id: s.to_member_id,
+          amount: Number(s.amount),
+          date: s.date,
+          notes: s.notes,
+          created_at: s.created_at,
+        }));
+      }
+      return [];
+    }
+
     const raw = localStorage.getItem(STORAGE_KEYS.SETTLEMENTS);
     return raw ? JSON.parse(raw) : [];
   }
@@ -485,7 +472,7 @@ class StorageService {
     notes?: string
   ): Promise<SettlementRecord> {
     const group = await this.getActiveGroup();
-    const record: SettlementRecord = {
+    const newRecord: SettlementRecord = {
       id: `set-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
       group_id: group.id,
       from_member_id: fromId,
@@ -496,20 +483,38 @@ class StorageService {
       created_at: new Date().toISOString(),
     };
 
-    const records = await this.getSettlements();
-    records.unshift(record);
-    localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(records));
+    const { isConfigured } = getSupabaseConfig();
+    if (isConfigured && supabase) {
+      const { data, error } = await supabase.from('settlements').insert({
+        group_id: group.id,
+        from_member_id: fromId,
+        to_member_id: toId,
+        amount,
+        notes,
+        date: newRecord.date,
+      }).select().single();
+
+      if (error) {
+        console.error('Failed to record settlement in Supabase:', error);
+        throw error;
+      }
+      if (data) {
+        newRecord.id = data.id;
+      }
+      this.notify();
+      return newRecord;
+    }
+
+    const settlements = await this.getSettlements();
+    settlements.unshift(newRecord);
+    localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(settlements));
     this.notify();
-    return record;
+    return newRecord;
   }
 
-  // Reset demo data to defaults
-  public resetToDefaultDemo(): void {
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(DEFAULT_USER));
-    localStorage.setItem(STORAGE_KEYS.GROUP, JSON.stringify(DEFAULT_GROUP));
-    localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(DEFAULT_MEMBERS));
-    localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(DEFAULT_MEALS));
-    localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify([]));
+  public resetToDefaultDemo() {
+    localStorage.removeItem(STORAGE_KEYS.MEALS);
+    localStorage.removeItem(STORAGE_KEYS.SETTLEMENTS);
     this.notify();
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { StatCards } from '../components/dashboard/StatCards';
 import { TodaysMeals } from '../components/dashboard/TodaysMeals';
@@ -27,14 +27,36 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   onNavigateTab,
 }) => {
   const { user, meals, members, currency } = useApp();
-  const [selectedMonth, setSelectedMonth] = useState<string>('2026-09');
+  const currentMonthKey = useMemo(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }, []);
 
-  // Month options (past few months and current)
-  const monthOptions = [
-    { key: '2026-09', label: 'September 2026' },
-    { key: '2026-08', label: 'August 2026' },
-    { key: '2026-07', label: 'July 2026' },
-  ];
+  const [selectedMonth, setSelectedMonth] = useState<string>(currentMonthKey);
+
+  // Dynamically generate month options based on current date and recorded meals
+  const monthOptions = useMemo(() => {
+    const set = new Set<string>();
+    set.add(currentMonthKey);
+    const d = new Date();
+    for (let i = 1; i <= 3; i++) {
+      const past = new Date(d.getFullYear(), d.getMonth() - i, 1);
+      set.add(`${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2, '0')}`);
+    }
+    meals.forEach((m) => {
+      if (m.date) set.add(m.date.substring(0, 7));
+    });
+
+    return Array.from(set)
+      .sort()
+      .reverse()
+      .map((key) => {
+        const [y, m] = key.split('-');
+        const date = new Date(Number(y), Number(m) - 1, 1);
+        const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        return { key, label };
+      });
+  }, [meals, currentMonthKey]);
 
   // Recent 5 meals
   const recentMeals = meals.slice(0, 5);
@@ -43,13 +65,15 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
     return members.find((m) => m.id === id)?.name || 'Unknown';
   };
 
+  const displayName = user?.name || members[0]?.name || 'Roommate';
+
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-150">
       {/* 25. Dashboard Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Welcome Back, {user?.name || 'Jay'}! 👋
+            Welcome Back, {displayName}! 👋
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Let's keep our meal expenses simple and fair.
@@ -65,7 +89,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="bg-transparent text-sm font-semibold text-slate-800 dark:text-slate-200 outline-hidden cursor-pointer"
             >
-              {monthOptions.map((opt) => (
+              {monthOptions.map((opt: { key: string; label: string }) => (
                 <option key={opt.key} value={opt.key} className="dark:bg-slate-800">
                   {opt.label}
                 </option>

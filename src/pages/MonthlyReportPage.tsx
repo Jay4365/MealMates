@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { generateMonthlyStats, formatCurrency } from '../utils/calculations';
 import type { Meal } from '../types';
@@ -27,22 +27,51 @@ interface MonthlyReportPageProps {
 
 export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSettlementModal }) => {
   const { meals, members, currency, group, user } = useApp();
-  const [selectedMonth, setSelectedMonth] = useState<string>('2026-09');
+
+  const currentMonthKey = useMemo(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }, []);
+
+  const [selectedMonth, setSelectedMonth] = useState<string>(currentMonthKey);
   
   // Selected member for individual statement (defaults to current user or first member)
   const defaultMember = members.find(
-    (m) => m.name.toLowerCase() === (user?.name?.toLowerCase() || 'jay')
+    (m) => user?.name && m.name.toLowerCase() === user.name.toLowerCase()
   ) || members[0];
-  const [selectedMemberId, setSelectedMemberId] = useState<string>(defaultMember?.id || 'm-jay');
+  const [selectedMemberId, setSelectedMemberId] = useState<string>(defaultMember?.id || '');
+
+  useEffect(() => {
+    if (!selectedMemberId && members.length > 0) {
+      setSelectedMemberId(defaultMember?.id || members[0].id);
+    }
+  }, [members, defaultMember, selectedMemberId]);
 
   // View mode: 'personal' (Person-wise Statement) or 'all' (All Roommates Overview)
   const [viewMode, setViewMode] = useState<'personal' | 'all'>('personal');
 
-  const monthOptions = [
-    { key: '2026-09', label: 'September 2026' },
-    { key: '2026-08', label: 'August 2026' },
-    { key: '2026-07', label: 'July 2026' },
-  ];
+  const monthOptions = useMemo(() => {
+    const set = new Set<string>();
+    set.add(currentMonthKey);
+    const d = new Date();
+    for (let i = 1; i <= 3; i++) {
+      const past = new Date(d.getFullYear(), d.getMonth() - i, 1);
+      set.add(`${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2, '0')}`);
+    }
+    meals.forEach((m) => {
+      if (m.date) set.add(m.date.substring(0, 7));
+    });
+
+    return Array.from(set)
+      .sort()
+      .reverse()
+      .map((key) => {
+        const [y, m] = key.split('-');
+        const date = new Date(Number(y), Number(m) - 1, 1);
+        const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        return { key, label };
+      });
+  }, [meals, currentMonthKey]);
 
   const stats = useMemo(() => {
     return generateMonthlyStats(meals, members, selectedMonth);

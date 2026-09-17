@@ -12,13 +12,9 @@ interface TodaysMealsProps {
 export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewMeal }) => {
   const { meals, members, currency } = useApp();
 
-  // Find meals for today (or fallback to latest day with meals like 2026-09-15 for the demo experience)
+  // Find meals for today
   const todayStr = new Date().toISOString().split('T')[0];
-  let currentDayMeals = meals.filter((m) => m.date === todayStr);
-
-  // If today has no meals in demo, display September 15th demo data or current day
-  const displayDateStr = currentDayMeals.length > 0 ? todayStr : '2026-09-15';
-  const displayMeals = meals.filter((m) => m.date === displayDateStr);
+  const displayMeals = meals.filter((m) => m.date === todayStr);
 
   const lunchMeal = displayMeals.find((m) => m.meal_type === 'lunch');
   const dinnerMeal = displayMeals.find((m) => m.meal_type === 'dinner');
@@ -27,7 +23,7 @@ export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewM
     return members.find((m) => m.id === id)?.name || 'Unknown';
   };
 
-  const formattedDate = new Date(displayDateStr + 'T00:00:00').toLocaleDateString('en-US', {
+  const formattedDate = new Date().toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',

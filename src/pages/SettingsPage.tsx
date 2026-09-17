@@ -76,10 +76,11 @@ export const SettingsPage: React.FC = () => {
   const handleResetData = () => {
     if (
       window.confirm(
-        'Are you sure you want to reset all data back to the default 5 roommates and September meals?'
+        'Are you sure you want to refresh all data directly from the cloud database?'
       )
     ) {
       resetDemoData();
+      showToast('Data refreshed from cloud.', 'info');
     }
   };
 
@@ -310,10 +311,10 @@ export const SettingsPage: React.FC = () => {
           </div>
           <div>
             <h3 className="font-bold text-slate-900 dark:text-white text-base">
-              Data Management & Demo Tools
+              Data Management & Sync
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Export data or reset back to the default 5 roommates
+              Export data backup or refresh data directly from cloud database
             </p>
           </div>
         </div>
@@ -329,10 +330,10 @@ export const SettingsPage: React.FC = () => {
 
           <button
             onClick={handleResetData}
-            className="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-xs font-semibold text-rose-700 dark:text-rose-300 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 text-xs font-semibold text-emerald-700 dark:text-emerald-300 transition-colors"
           >
-            <RotateCcw className="w-4 h-4 text-rose-500" />
-            <span>Reset Demo Data (5 Roommates)</span>
+            <RotateCcw className="w-4 h-4 text-emerald-500" />
+            <span>Sync Fresh from Cloud</span>
           </button>
         </div>
       </div>

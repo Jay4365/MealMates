@@ -20,9 +20,9 @@ export const StatCards: React.FC<StatCardsProps> = ({ selectedMonth }) => {
   const todayMeals = meals.filter((m) => m.date === todayStr);
   const todayExpense = todayMeals.reduce((acc, m) => acc + (Number(m.total_amount) || 0), 0);
 
-  // Current logged in user balance (or Jay's balance if in demo)
+  // Current logged in user balance or first member
   const currentMemberBalance = balances.find((b) => 
-    b.member_id === 'm-jay' || b.member_name.toLowerCase() === (user?.name?.toLowerCase() || 'jay')
+    user?.name && b.member_name.toLowerCase() === user.name.toLowerCase()
   ) || balances[0];
 
   const myNetBalance = currentMemberBalance?.net_balance || 0;
@@ -81,7 +81,7 @@ export const StatCards: React.FC<StatCardsProps> = ({ selectedMonth }) => {
       <div className="bg-white dark:bg-slate-800/90 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs hover:shadow-md transition-all duration-200 relative overflow-hidden">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            My Balance ({currentMemberBalance?.member_name || 'Jay'})
+            My Balance {currentMemberBalance?.member_name ? `(${currentMemberBalance.member_name})` : ''}
           </span>
           <div
             className={`w-10 h-10 rounded-xl flex items-center justify-center ${
