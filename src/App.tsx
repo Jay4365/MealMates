@@ -11,6 +11,7 @@ import { MonthlyReportPage } from './pages/MonthlyReportPage';
 import { MembersPage } from './pages/MembersPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AuthModal } from './pages/AuthPage';
+import { LoginPage } from './pages/LoginPage';
 
 import { AddMealModal } from './components/meals/AddMealModal';
 import { MealDetailsModal } from './components/meals/MealDetailsModal';
@@ -18,7 +19,7 @@ import { SettlementModal } from './components/settlement/SettlementModal';
 import type { Meal, MealType } from './types';
 
 const MainApp: React.FC = () => {
-  const { loading } = useApp();
+  const { loading, user } = useApp();
   const [currentTab, setCurrentTab] = useState<NavigationTab>('dashboard');
 
   // Modals state
@@ -55,6 +56,16 @@ const MainApp: React.FC = () => {
           </span>
         </div>
       </div>
+    );
+  }
+
+  // Strict Login Gate: Without login, no one can open or access household data
+  if (!user) {
+    return (
+      <>
+        <LoginPage />
+        <ToastContainer />
+      </>
     );
   }
 

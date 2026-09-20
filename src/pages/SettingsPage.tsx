@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   FileCode2,
+  LogOut,
 } from 'lucide-react';
 
 export const SettingsPage: React.FC = () => {
@@ -26,6 +27,8 @@ export const SettingsPage: React.FC = () => {
     showToast,
     meals,
     members,
+    user,
+    logout,
   } = useApp();
 
   // Group settings state
@@ -113,6 +116,36 @@ export const SettingsPage: React.FC = () => {
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Customize your room preferences, currency, theme, and backend connectivity
         </p>
+      </div>
+
+      {/* Active Account / Session */}
+      <div className="bg-white dark:bg-slate-800/90 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white font-black text-lg flex items-center justify-center shadow-md shadow-emerald-500/20">
+            {user?.name?.charAt(0).toUpperCase() || 'U'}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-slate-900 dark:text-white text-base">
+                {user?.name || 'Roommate'}
+              </h3>
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                Active Member
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {user?.email || 'Logged in to MealMates'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={logout}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-700 dark:text-rose-300 font-bold text-xs transition-colors cursor-pointer self-start sm:self-auto"
+        >
+          <LogOut className="w-4 h-4" />
+          <span>Log Out / Switch Account</span>
+        </button>
       </div>
 
       {/* 1. Group / Household Settings */}

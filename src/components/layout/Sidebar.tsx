@@ -9,6 +9,7 @@ import {
   Settings,
   ShieldCheck,
   Zap,
+  LogOut,
 } from 'lucide-react';
 
 export type NavigationTab = 'dashboard' | 'history' | 'monthly-report' | 'members' | 'settings';
@@ -25,7 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectTab,
   onOpenAddMeal,
 }) => {
-  const { user, group, isSupabaseConnected, members } = useApp();
+  const { user, group, isSupabaseConnected, logout } = useApp();
 
   const navItems = [
     {
@@ -152,24 +153,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center justify-between pt-1">
           <div className="flex items-center gap-2.5 truncate">
             <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
-              {user?.name?.charAt(0) || members[0]?.name?.charAt(0) || 'U'}
+              {user?.name?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div className="truncate">
               <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
-                {user?.name || members[0]?.name || 'Roommate'}
+                {user?.name || 'Roommate'}
               </p>
               <p className="text-[10px] text-slate-400 truncate">
-                {user?.email || (members[0]?.name ? `${members[0].name.toLowerCase()}@room` : 'room@mealmates')}
+                {user?.email || 'roommate@mealmates.app'}
               </p>
             </div>
           </div>
-          <button
-            onClick={() => onSelectTab('settings')}
-            title="Account Settings"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          >
-            <Settings className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={() => onSelectTab('settings')}
+              title="Account Settings"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+            <button
+              onClick={logout}
+              title="Log out / Switch profile"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </aside>

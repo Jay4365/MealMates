@@ -1,13 +1,13 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { Sun, Moon, Utensils, Plus, Database } from 'lucide-react';
+import { Sun, Moon, Utensils, Plus, Database, LogOut } from 'lucide-react';
 
 interface NavbarProps {
   onOpenAddMeal: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenAddMeal }) => {
-  const { user, group, theme, toggleTheme, isSupabaseConnected, members } = useApp();
+  const { user, group, theme, toggleTheme, isSupabaseConnected, logout } = useApp();
 
   return (
     <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
@@ -34,7 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAddMeal }) => {
           </div>
 
           {/* Right actions */}
-          <div className="flex items-center gap-2.5 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Supabase status indicator */}
             <div
               title={isSupabaseConnected ? 'Connected to Supabase PostgreSQL' : 'Running in Local Demo Storage Mode'}
@@ -48,7 +48,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAddMeal }) => {
             <button
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 cursor-pointer"
             >
               {theme === 'light' ? (
                 <Moon className="w-5 h-5 text-slate-700" />
@@ -60,25 +60,36 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAddMeal }) => {
             {/* Quick Add Meal CTA */}
             <button
               onClick={onOpenAddMeal}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-medium text-sm shadow-md shadow-emerald-600/20 transition-all duration-150"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-medium text-sm shadow-md shadow-emerald-600/20 transition-all duration-150 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Add Meal</span>
             </button>
 
-            {/* User Profile avatar */}
-            <div className="flex items-center gap-2 pl-1 border-l border-slate-200 dark:border-slate-800">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-                {user?.name?.charAt(0).toUpperCase() || (members[0]?.name ? members[0].name.charAt(0).toUpperCase() : 'R')}
+            {/* User Profile & Logout */}
+            <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
+              <div
+                title={`Logged in as ${user?.name || 'Roommate'}`}
+                className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0"
+              >
+                {user?.name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div className="hidden xl:block text-left text-xs leading-tight">
-                <span className="block font-semibold text-slate-800 dark:text-slate-200">
-                  {user?.name || members[0]?.name || 'Roommate'}
+                <span className="block font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[90px]">
+                  {user?.name || 'Roommate'}
                 </span>
                 <span className="text-slate-400 dark:text-slate-500 text-[10px]">
                   Roommate
                 </span>
               </div>
+              <button
+                onClick={logout}
+                title="Log out / Switch profile"
+                aria-label="Log Out"
+                className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>

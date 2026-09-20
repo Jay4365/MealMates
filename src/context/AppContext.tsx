@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, typ
 import type { Group, GroupMember, Meal, MemberBalance, User, SettlementRecord } from '../types';
 import { storageService } from '../services/storageService';
 import { calculateMemberBalances } from '../utils/calculations';
-import { getSupabaseConfig } from '../lib/supabase';
+import { getSupabaseConfig, supabase } from '../lib/supabase';
 
 interface Toast {
   id: string;
@@ -38,6 +38,7 @@ interface AppContextType {
   recordSettlement: (fromId: string, toId: string, amount: number, notes?: string) => Promise<SettlementRecord>;
   resetDemoData: () => void;
   setUser: (user: User | null) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -130,6 +131,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const setUser = async (newUser: User | null) => {
     await storageService.setCurrentUser(newUser);
     setUserState(newUser);
+  };
+
+  const logout = async () => {
+    try {
+      if (isConfigured && supabase) {
+        await supabase.auth.signOut();
+      }
+    } catch (err) {
+      console.warn('Supabase signout notice:', err);
+    }
+    await storageService.setCurrentUser(null);
+    setUserState(null);
+    showToast('Logged out successfully', 'info');
   };
 
   // Actions wrapped with toasts
@@ -259,6 +273,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         recordSettlement,
         resetDemoData,
         setUser,
+        logout,
       }}
     >
       {children}
