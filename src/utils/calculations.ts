@@ -1,4 +1,4 @@
-import type { Meal, GroupMember, MemberBalance, SettlementInstruction, MonthlyStats } from '../types';
+import type { Meal, GroupMember, MemberBalance, SettlementInstruction, MonthlyStats, SettlementRecord } from '../types';
 
 /**
  * Format currency amount with sign and symbol
@@ -60,11 +60,12 @@ export const calculateMealSplit = (
 };
 
 /**
- * Calculate balances for all members across a set of meals
+ * Calculate balances for all members across meals and recorded settlements
  */
 export const calculateMemberBalances = (
   members: GroupMember[],
-  meals: Meal[]
+  meals: Meal[],
+  settlements: SettlementRecord[] = []
 ): MemberBalance[] => {
   const memberMap = new Map<string, MemberBalance>();
 
@@ -77,6 +78,8 @@ export const calculateMemberBalances = (
       is_active: m.is_active,
       total_paid: 0,
       total_share: 0,
+      total_settled_paid: 0,
+      total_settled_received: 0,
       net_balance: 0,
       meals_eaten_count: 0,
       lunch_count: 0,
@@ -113,12 +116,33 @@ export const calculateMemberBalances = (
     });
   });
 
-  // Calculate final net balance = total_paid - total_share
+  // Process recorded settlements:
+  // from_member paid amount in settlement -> their debt is reduced (balance increases)
+  // to_member received amount in settlement -> their credit is collected (balance decreases)
+  settlements.forEach((s) => {
+    const amt = Number(s.amount) || 0;
+    if (amt <= 0) return;
+
+    const fromMember = memberMap.get(s.from_member_id);
+    if (fromMember) {
+      fromMember.total_settled_paid = (fromMember.total_settled_paid || 0) + amt;
+    }
+
+    const toMember = memberMap.get(s.to_member_id);
+    if (toMember) {
+      toMember.total_settled_received = (toMember.total_settled_received || 0) + amt;
+    }
+  });
+
+  // Calculate final net balance:
+  // net_balance = (total_paid - total_share) + (total_settled_paid - total_settled_received)
   const result: MemberBalance[] = [];
   memberMap.forEach((mb) => {
     mb.total_paid = Math.round(mb.total_paid * 100) / 100;
     mb.total_share = Math.round(mb.total_share * 100) / 100;
-    mb.net_balance = Math.round((mb.total_paid - mb.total_share) * 100) / 100;
+    const settledPaid = Math.round((mb.total_settled_paid || 0) * 100) / 100;
+    const settledReceived = Math.round((mb.total_settled_received || 0) * 100) / 100;
+    mb.net_balance = Math.round(((mb.total_paid - mb.total_share) + (settledPaid - settledReceived)) * 100) / 100;
     result.push(mb);
   });
 
@@ -191,14 +215,16 @@ export const calculateSimplifiedSettlements = (
 export const generateMonthlyStats = (
   allMeals: Meal[],
   members: GroupMember[],
-  yearMonth: string // "YYYY-MM" e.g. "2026-09"
+  yearMonth: string, // "YYYY-MM" e.g. "2026-09"
+  allSettlements: SettlementRecord[] = []
 ): MonthlyStats => {
   const [year, month] = yearMonth.split('-').map(Number);
   const dateObj = new Date(year, month - 1, 1);
   const month_str = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-  // Filter meals for this month
+  // Filter meals and settlements for this month
   const monthMeals = allMeals.filter((m) => m.date.startsWith(yearMonth));
+  const monthSettlements = allSettlements.filter((s) => s.date.startsWith(yearMonth));
 
   let total_expense = 0;
   let lunch_count = 0;
@@ -219,7 +245,7 @@ export const generateMonthlyStats = (
   const total_meals = monthMeals.length;
   const avg_cost_per_meal = total_meals > 0 ? Math.round((total_expense / total_meals) * 100) / 100 : 0;
 
-  const balances = calculateMemberBalances(members, monthMeals);
+  const balances = calculateMemberBalances(members, monthMeals, monthSettlements);
   const settlements = calculateSimplifiedSettlements(balances);
 
   const member_summaries = balances.map((b) => ({

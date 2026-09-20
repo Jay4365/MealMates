@@ -93,7 +93,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       setMeals(mealList);
       setSettlements(settlementList);
 
-      const calculatedBalances = calculateMemberBalances(memberList, mealList);
+      const calculatedBalances = calculateMemberBalances(memberList, mealList, settlementList);
       setBalances(calculatedBalances);
     } catch (err) {
       console.error('Failed to load application data:', err);
@@ -230,6 +230,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const recordSettlement = async (fromId: string, toId: string, amount: number, notes?: string) => {
     try {
       const res = await storageService.recordSettlement(fromId, toId, amount, notes);
+      setSettlements((prev) => [res, ...prev]);
+      setBalances(calculateMemberBalances(members, meals, [res, ...settlements]));
       showToast('Settlement recorded successfully! 🎉', 'success');
       return res;
     } catch (e: any) {

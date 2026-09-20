@@ -26,7 +26,7 @@ interface MonthlyReportPageProps {
 }
 
 export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSettlementModal }) => {
-  const { meals, members, currency, group, user } = useApp();
+  const { meals, members, currency, group, user, settlements } = useApp();
 
   const currentMonthKey = useMemo(() => {
     const d = new Date();
@@ -74,8 +74,8 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
   }, [meals, currentMonthKey]);
 
   const stats = useMemo(() => {
-    return generateMonthlyStats(meals, members, selectedMonth);
-  }, [meals, members, selectedMonth]);
+    return generateMonthlyStats(meals, members, selectedMonth, settlements);
+  }, [meals, members, selectedMonth, settlements]);
 
   // Selected person details
   const selectedMember = members.find((m) => m.id === selectedMemberId) || members[0];

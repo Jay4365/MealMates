@@ -10,11 +10,14 @@ interface SettlementModalProps {
 }
 
 export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClose }) => {
-  const { balances, currency, recordSettlement } = useApp();
-  const [settledTxns, setSettledTxns] = useState<string[]>([]);
+  const { balances, currency, recordSettlement, settlements, members } = useApp();
   const [recordingId, setRecordingId] = useState<string | null>(null);
 
   if (!isOpen) return null;
+
+  const getMemberName = (id: string) => {
+    return members.find((m) => m.id === id)?.name || 'Roommate';
+  };
 
   const simplifiedTransactions = calculateSimplifiedSettlements(balances);
 
@@ -33,7 +36,6 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
         amount,
         `Settled ₹${amount} from ${fromName} to ${toName}`
       );
-      setSettledTxns((prev) => [...prev, txnKey]);
 
       // Confetti burst
       confetti({
@@ -107,37 +109,32 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
             </div>
 
             {simplifiedTransactions.length === 0 ? (
-              <div className="p-8 text-center rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
+              <div className="p-8 text-center rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-800/60">
                 <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
                 <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                  All Roommates Are Squared Up!
+                  All Roommates Are Squared Up! 🎉
                 </p>
-                <p className="text-xs text-slate-400 mt-1">
-                  No outstanding balances or payments required.
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  All debts have been paid and settled.
                 </p>
               </div>
             ) : (
               <div className="space-y-2.5">
                 {simplifiedTransactions.map((txn, index) => {
                   const txnKey = `${txn.from_id}-${txn.to_id}-${txn.amount}`;
-                  const isSettled = settledTxns.includes(txnKey);
                   const isRecording = recordingId === txnKey;
 
                   return (
                     <div
                       key={index}
-                      className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between ${
-                        isSettled
-                          ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800/60 opacity-80'
-                          : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 shadow-xs'
-                      }`}
+                      className="p-3.5 rounded-2xl border transition-all flex items-center justify-between bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 shadow-xs"
                     >
                       <div className="flex items-center gap-2 sm:gap-3">
                         <div className="text-left">
                           <span className="font-bold text-slate-900 dark:text-slate-100 text-sm block">
                             {txn.from_name}
                           </span>
-                          <span className="text-[10px] text-rose-500 font-semibold">Payer</span>
+                          <span className="text-[10px] text-rose-500 font-semibold">Payer (Owes)</span>
                         </div>
 
                         <div className="flex flex-col items-center px-1">
@@ -155,25 +152,18 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
                         </div>
                       </div>
 
-                      {/* Action */}
+                      {/* Action Button */}
                       <div>
-                        {isSettled ? (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/80 px-2.5 py-1 rounded-lg">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            Settled
-                          </span>
-                        ) : (
-                          <button
-                            disabled={isRecording}
-                            onClick={() =>
-                              handleSettle(txnKey, txn.from_id, txn.to_id, txn.amount, txn.from_name, txn.to_name)
-                            }
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs hover:bg-emerald-600 dark:hover:bg-emerald-400 dark:hover:text-slate-950 transition-all shadow-xs active:scale-95 disabled:opacity-50"
-                          >
-                            <Send className="w-3 h-3" />
-                            <span>{isRecording ? 'Saving...' : 'Mark Paid'}</span>
-                          </button>
-                        )}
+                        <button
+                          disabled={isRecording}
+                          onClick={() =>
+                            handleSettle(txnKey, txn.from_id, txn.to_id, txn.amount, txn.from_name, txn.to_name)
+                          }
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs hover:bg-emerald-600 dark:hover:bg-emerald-400 dark:hover:text-slate-950 transition-all shadow-xs active:scale-95 disabled:opacity-50 cursor-pointer"
+                        >
+                          <Send className="w-3 h-3" />
+                          <span>{isRecording ? 'Recording...' : 'Mark as Paid'}</span>
+                        </button>
                       </div>
                     </div>
                   );
@@ -181,6 +171,54 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
               </div>
             )}
           </div>
+
+          {/* Recorded Paid Settlements History (Syncs across all logins) */}
+          {settlements.length > 0 && (
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Settled & Paid History ({settlements.length})</span>
+                </span>
+                <span className="text-[10px] text-slate-400">Visible Across All Logins</span>
+              </div>
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                {settlements.map((s) => (
+                  <div
+                    key={s.id}
+                    className="p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/40 flex items-center justify-between text-xs"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs shrink-0">
+                        ✓
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-800 dark:text-slate-200">
+                          <span className="font-bold text-slate-900 dark:text-white">
+                            {getMemberName(s.from_member_id)}
+                          </span>{' '}
+                          paid{' '}
+                          <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                            {formatCurrency(s.amount, currency)}
+                          </span>{' '}
+                          to{' '}
+                          <span className="font-bold text-slate-900 dark:text-white">
+                            {getMemberName(s.to_member_id)}
+                          </span>
+                        </p>
+                        <p className="text-[10px] text-slate-400">
+                          {s.date} {s.notes ? `• ${s.notes}` : ''}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shrink-0">
+                      Paid
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Explanatory note */}
           <p className="text-[11px] text-slate-400 dark:text-slate-500 text-center leading-relaxed">

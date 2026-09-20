@@ -54,6 +54,8 @@ export interface MemberBalance {
   is_active: boolean;
   total_paid: number;
   total_share: number;
+  total_settled_paid?: number;
+  total_settled_received?: number;
   net_balance: number; // positive: will receive / get back, negative: needs to pay
   meals_eaten_count: number;
   lunch_count: number;
