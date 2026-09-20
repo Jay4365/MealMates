@@ -36,6 +36,7 @@ interface AppContextType {
   deleteMember: (id: string) => Promise<{ success: boolean; reason?: string }>;
   updateGroup: (updates: Partial<Group>) => Promise<Group>;
   recordSettlement: (fromId: string, toId: string, amount: number, notes?: string) => Promise<SettlementRecord>;
+  deleteSettlement: (id: string) => Promise<void>;
   resetDemoData: () => void;
   setUser: (user: User | null) => Promise<void>;
   logout: () => Promise<void>;
@@ -230,12 +231,26 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const recordSettlement = async (fromId: string, toId: string, amount: number, notes?: string) => {
     try {
       const res = await storageService.recordSettlement(fromId, toId, amount, notes);
-      setSettlements((prev) => [res, ...prev]);
-      setBalances(calculateMemberBalances(members, meals, [res, ...settlements]));
+      const updated = [res, ...settlements.filter((s) => s.id !== res.id)];
+      setSettlements(updated);
+      setBalances(calculateMemberBalances(members, meals, updated));
       showToast('Settlement recorded successfully! 🎉', 'success');
       return res;
     } catch (e: any) {
       showToast(e.message || 'Failed to record settlement', 'error');
+      throw e;
+    }
+  };
+
+  const deleteSettlement = async (id: string) => {
+    try {
+      await storageService.deleteSettlement(id);
+      const remainingSettlements = settlements.filter((s) => s.id !== id);
+      setSettlements(remainingSettlements);
+      setBalances(calculateMemberBalances(members, meals, remainingSettlements));
+      showToast('Settlement undone! Returned to pending.', 'info');
+    } catch (e: any) {
+      showToast(e.message || 'Failed to undo settlement', 'error');
       throw e;
     }
   };
@@ -273,6 +288,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         deleteMember,
         updateGroup,
         recordSettlement,
+        deleteSettlement,
         resetDemoData,
         setUser,
         logout,

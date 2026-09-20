@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatCurrency, calculateSimplifiedSettlements } from '../../utils/calculations';
 import confetti from 'canvas-confetti';
-import { X, ArrowRight, CheckCircle2, Scale, Sparkles, Send } from 'lucide-react';
+import { X, ArrowRight, CheckCircle2, Scale, Sparkles, Send, RotateCcw } from 'lucide-react';
 
 interface SettlementModalProps {
   isOpen: boolean;
@@ -10,8 +10,9 @@ interface SettlementModalProps {
 }
 
 export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClose }) => {
-  const { balances, currency, recordSettlement, settlements, members } = useApp();
+  const { balances, currency, recordSettlement, deleteSettlement, settlements, members } = useApp();
   const [recordingId, setRecordingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -48,6 +49,17 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
       console.error(e);
     } finally {
       setRecordingId(null);
+    }
+  };
+
+  const handleUndo = async (settlementId: string) => {
+    setDeletingId(settlementId);
+    try {
+      await deleteSettlement(settlementId);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -211,9 +223,21 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
                         </p>
                       </div>
                     </div>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shrink-0">
-                      Paid
-                    </span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shrink-0">
+                        Paid
+                      </span>
+                      <button
+                        type="button"
+                        disabled={deletingId === s.id}
+                        onClick={() => handleUndo(s.id)}
+                        title="Return back to unpaid / pending"
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold text-rose-600 dark:text-rose-400 bg-rose-50/80 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200/80 dark:border-rose-900/60 transition-all cursor-pointer disabled:opacity-50"
+                      >
+                        <RotateCcw className={`w-3 h-3 ${deletingId === s.id ? 'animate-spin' : ''}`} />
+                        <span>{deletingId === s.id ? 'Returning...' : 'Return'}</span>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

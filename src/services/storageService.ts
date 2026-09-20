@@ -434,35 +434,47 @@ class StorageService {
 
   // --- Settlement Methods ---
   public async getSettlements(): Promise<SettlementRecord[]> {
+    const raw = localStorage.getItem(STORAGE_KEYS.SETTLEMENTS);
+    const localSettlements: SettlementRecord[] = raw ? JSON.parse(raw) : [];
+
     const { isConfigured } = getSupabaseConfig();
     if (isConfigured && supabase) {
-      const group = await this.getActiveGroup();
-      const { data, error } = await supabase
-        .from('settlements')
-        .select('*')
-        .eq('group_id', group.id)
-        .order('created_at', { ascending: false });
+      try {
+        const group = await this.getActiveGroup();
+        const { data, error } = await supabase
+          .from('settlements')
+          .select('*')
+          .eq('group_id', group.id)
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Failed to fetch settlements from Supabase:', error);
+        if (!error && data && data.length > 0) {
+          const supabaseSettlements: SettlementRecord[] = data.map((s) => ({
+            id: s.id,
+            group_id: s.group_id,
+            from_member_id: s.from_member_id,
+            to_member_id: s.to_member_id,
+            amount: Number(s.amount),
+            date: s.date,
+            notes: s.notes || undefined,
+            created_at: s.created_at,
+          }));
+
+          // Merge local and supabase without duplicates
+          const merged: SettlementRecord[] = [...supabaseSettlements];
+          localSettlements.forEach((ls) => {
+            if (!merged.some((m) => m.id === ls.id)) {
+              merged.push(ls);
+            }
+          });
+          localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(merged));
+          return merged;
+        }
+      } catch (err) {
+        console.warn('Supabase fetch settlements notice:', err);
       }
-      if (data) {
-        return data.map((s) => ({
-          id: s.id,
-          group_id: s.group_id,
-          from_member_id: s.from_member_id,
-          to_member_id: s.to_member_id,
-          amount: Number(s.amount),
-          date: s.date,
-          notes: s.notes,
-          created_at: s.created_at,
-        }));
-      }
-      return [];
     }
 
-    const raw = localStorage.getItem(STORAGE_KEYS.SETTLEMENTS);
-    return raw ? JSON.parse(raw) : [];
+    return localSettlements;
   }
 
   public async recordSettlement(
@@ -483,33 +495,55 @@ class StorageService {
       created_at: new Date().toISOString(),
     };
 
-    const { isConfigured } = getSupabaseConfig();
-    if (isConfigured && supabase) {
-      const { data, error } = await supabase.from('settlements').insert({
-        group_id: group.id,
-        from_member_id: fromId,
-        to_member_id: toId,
-        amount,
-        notes,
-        date: newRecord.date,
-      }).select().single();
-
-      if (error) {
-        console.error('Failed to record settlement in Supabase:', error);
-        throw error;
-      }
-      if (data) {
-        newRecord.id = data.id;
-      }
-      this.notify();
-      return newRecord;
-    }
-
+    // 1. ALWAYS persist to localStorage first so it survives page reloads
     const settlements = await this.getSettlements();
     settlements.unshift(newRecord);
     localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(settlements));
+
+    // 2. Also try Supabase insert if configured
+    const { isConfigured } = getSupabaseConfig();
+    if (isConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.from('settlements').insert({
+          group_id: group.id,
+          from_member_id: fromId,
+          to_member_id: toId,
+          amount,
+          notes,
+          date: newRecord.date,
+        }).select().single();
+
+        if (!error && data) {
+          newRecord.id = data.id;
+          localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(settlements));
+        }
+      } catch (err) {
+        console.warn('Supabase recordSettlement notice:', err);
+      }
+    }
+
     this.notify();
     return newRecord;
+  }
+
+  public async deleteSettlement(id: string): Promise<void> {
+    // 1. Remove from localStorage
+    const raw = localStorage.getItem(STORAGE_KEYS.SETTLEMENTS);
+    const settlements: SettlementRecord[] = raw ? JSON.parse(raw) : [];
+    const filtered = settlements.filter((s) => s.id !== id);
+    localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(filtered));
+
+    // 2. Remove from Supabase if configured
+    const { isConfigured } = getSupabaseConfig();
+    if (isConfigured && supabase) {
+      try {
+        await supabase.from('settlements').delete().eq('id', id);
+      } catch (err) {
+        console.warn('Supabase deleteSettlement notice:', err);
+      }
+    }
+
+    this.notify();
   }
 
   public resetToDefaultDemo() {
