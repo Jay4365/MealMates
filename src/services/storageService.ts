@@ -14,9 +14,31 @@ const STORAGE_KEYS = {
 class StorageService {
   private listeners: (() => void)[] = [];
   private realtimeChannelInitialized = false;
+  private broadcastChannel: BroadcastChannel | null = null;
 
   constructor() {
     this.initRealtime();
+    this.initCrossTabSync();
+  }
+
+  private initCrossTabSync() {
+    try {
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        this.broadcastChannel = new BroadcastChannel('mealmates_sync_channel');
+        this.broadcastChannel.onmessage = () => {
+          this.notifyLocal();
+        };
+      }
+      if (typeof window !== 'undefined') {
+        window.addEventListener('storage', (e) => {
+          if (e.key?.startsWith('mealmates_')) {
+            this.notifyLocal();
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('Cross-tab broadcast init notice:', e);
+    }
   }
 
   private initRealtime() {
@@ -45,6 +67,15 @@ class StorageService {
   }
 
   private notify() {
+    this.notifyLocal();
+    try {
+      this.broadcastChannel?.postMessage({ timestamp: Date.now() });
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  private notifyLocal() {
     this.listeners.forEach((cb) => {
       try {
         cb();
@@ -437,6 +468,13 @@ class StorageService {
     const raw = localStorage.getItem(STORAGE_KEYS.SETTLEMENTS);
     const localSettlements: SettlementRecord[] = raw ? JSON.parse(raw) : [];
 
+    const isSameTxn = (a: SettlementRecord, b: SettlementRecord) =>
+      a.id === b.id ||
+      (a.from_member_id === b.from_member_id &&
+       a.to_member_id === b.to_member_id &&
+       Math.abs(Number(a.amount) - Number(b.amount)) < 0.01 &&
+       a.date === b.date);
+
     const { isConfigured } = getSupabaseConfig();
     if (isConfigured && supabase) {
       try {
@@ -462,19 +500,40 @@ class StorageService {
           // Merge local and supabase without duplicates
           const merged: SettlementRecord[] = [...supabaseSettlements];
           localSettlements.forEach((ls) => {
-            if (!merged.some((m) => m.id === ls.id)) {
+            if (!merged.some((m) => isSameTxn(m, ls))) {
               merged.push(ls);
             }
           });
-          localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(merged));
-          return merged;
+
+          // Deduplicate merged list
+          const uniqueMerged: SettlementRecord[] = [];
+          merged.forEach((item) => {
+            if (!uniqueMerged.some((u) => isSameTxn(u, item))) {
+              uniqueMerged.push(item);
+            }
+          });
+
+          localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(uniqueMerged));
+          return uniqueMerged;
         }
       } catch (err) {
         console.warn('Supabase fetch settlements notice:', err);
       }
     }
 
-    return localSettlements;
+    // Clean up local duplicates if any
+    const uniqueLocal: SettlementRecord[] = [];
+    localSettlements.forEach((item) => {
+      if (!uniqueLocal.some((u) => isSameTxn(u, item))) {
+        uniqueLocal.push(item);
+      }
+    });
+
+    if (uniqueLocal.length !== localSettlements.length) {
+      localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(uniqueLocal));
+    }
+
+    return uniqueLocal;
   }
 
   public async recordSettlement(
@@ -495,10 +554,20 @@ class StorageService {
       created_at: new Date().toISOString(),
     };
 
-    // 1. ALWAYS persist to localStorage first so it survives page reloads
+    // 1. Check existing settlements to avoid duplicate inserts
     const settlements = await this.getSettlements();
-    settlements.unshift(newRecord);
-    localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(settlements));
+    const isDuplicate = settlements.some(
+      (s) =>
+        s.from_member_id === fromId &&
+        s.to_member_id === toId &&
+        Math.abs(Number(s.amount) - Number(amount)) < 0.01 &&
+        s.date === newRecord.date
+    );
+
+    if (!isDuplicate) {
+      settlements.unshift(newRecord);
+      localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(settlements));
+    }
 
     // 2. Also try Supabase insert if configured
     const { isConfigured } = getSupabaseConfig();
@@ -527,10 +596,25 @@ class StorageService {
   }
 
   public async deleteSettlement(id: string): Promise<void> {
-    // 1. Remove from localStorage
+    // 1. Remove from localStorage and remove any identical duplicates
     const raw = localStorage.getItem(STORAGE_KEYS.SETTLEMENTS);
     const settlements: SettlementRecord[] = raw ? JSON.parse(raw) : [];
-    const filtered = settlements.filter((s) => s.id !== id);
+    const target = settlements.find((s) => s.id === id);
+
+    const filtered = settlements.filter((s) => {
+      if (s.id === id) return false;
+      if (
+        target &&
+        s.from_member_id === target.from_member_id &&
+        s.to_member_id === target.to_member_id &&
+        Math.abs(Number(s.amount) - Number(target.amount)) < 0.01 &&
+        s.date === target.date
+      ) {
+        return false;
+      }
+      return true;
+    });
+
     localStorage.setItem(STORAGE_KEYS.SETTLEMENTS, JSON.stringify(filtered));
 
     // 2. Remove from Supabase if configured
@@ -538,6 +622,14 @@ class StorageService {
     if (isConfigured && supabase) {
       try {
         await supabase.from('settlements').delete().eq('id', id);
+        if (target) {
+          await supabase
+            .from('settlements')
+            .delete()
+            .eq('from_member_id', target.from_member_id)
+            .eq('to_member_id', target.to_member_id)
+            .eq('amount', target.amount);
+        }
       } catch (err) {
         console.warn('Supabase deleteSettlement notice:', err);
       }

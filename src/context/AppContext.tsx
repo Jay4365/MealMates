@@ -132,6 +132,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const setUser = async (newUser: User | null) => {
     await storageService.setCurrentUser(newUser);
     setUserState(newUser);
+    await loadData();
   };
 
   const logout = async () => {
@@ -231,9 +232,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const recordSettlement = async (fromId: string, toId: string, amount: number, notes?: string) => {
     try {
       const res = await storageService.recordSettlement(fromId, toId, amount, notes);
-      const updated = [res, ...settlements.filter((s) => s.id !== res.id)];
-      setSettlements(updated);
-      setBalances(calculateMemberBalances(members, meals, updated));
+      await loadData();
       showToast('Settlement recorded successfully! 🎉', 'success');
       return res;
     } catch (e: any) {
@@ -245,10 +244,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const deleteSettlement = async (id: string) => {
     try {
       await storageService.deleteSettlement(id);
-      const remainingSettlements = settlements.filter((s) => s.id !== id);
-      setSettlements(remainingSettlements);
-      setBalances(calculateMemberBalances(members, meals, remainingSettlements));
-      showToast('Settlement undone! Returned to pending.', 'info');
+      await loadData();
+      showToast('Settlement returned back to pending.', 'info');
     } catch (e: any) {
       showToast(e.message || 'Failed to undo settlement', 'error');
       throw e;
