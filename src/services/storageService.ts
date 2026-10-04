@@ -540,16 +540,18 @@ class StorageService {
     fromId: string,
     toId: string,
     amount: number,
-    notes?: string
+    notes?: string,
+    date?: string
   ): Promise<SettlementRecord> {
     const group = await this.getActiveGroup();
+    const settlementDate = date || new Date().toISOString().split('T')[0];
     const newRecord: SettlementRecord = {
       id: `set-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
       group_id: group.id,
       from_member_id: fromId,
       to_member_id: toId,
       amount,
-      date: new Date().toISOString().split('T')[0],
+      date: settlementDate,
       notes,
       created_at: new Date().toISOString(),
     };

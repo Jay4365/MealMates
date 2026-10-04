@@ -15,7 +15,8 @@ import {
 } from 'lucide-react';
 
 export const MembersPage: React.FC = () => {
-  const { members, balances, currency, addMember, updateMember, deleteMember } = useApp();
+  const { members, balances, monthlyBalances, currency, addMember, updateMember, deleteMember, selectedMonthLabel } = useApp();
+  const [scope, setScope] = useState<'month' | 'all'>('month');
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<GroupMember | null>(null);
@@ -86,19 +87,46 @@ export const MembersPage: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all self-start sm:self-auto"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>+ Add Member</span>
-        </button>
+        <div className="flex items-center gap-3 self-start sm:self-auto">
+          {/* Scope toggle */}
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl text-xs font-semibold border border-slate-200/60 dark:border-slate-700/60">
+            <button
+              onClick={() => setScope('month')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${
+                scope === 'month'
+                  ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-bold'
+                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+              }`}
+            >
+              {selectedMonthLabel}
+            </button>
+            <button
+              onClick={() => setScope('all')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${
+                scope === 'all'
+                  ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-bold'
+                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+              }`}
+            >
+              All Time
+            </button>
+          </div>
+
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span>+ Add Member</span>
+          </button>
+        </div>
       </div>
 
       {/* Members Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {members.map((member: GroupMember) => {
-          const balance = balances.find((b) => b.member_id === member.id);
+          const activeBalances = scope === 'month' ? monthlyBalances : balances;
+          const balance = activeBalances.find((b) => b.member_id === member.id);
           const net = balance?.net_balance || 0;
           const isPos = net > 0.01;
           const isNeg = net < -0.01;
@@ -187,7 +215,9 @@ export const MembersPage: React.FC = () => {
               {/* Net Balance footer */}
               <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
                 <div>
-                  <span className="text-[11px] text-slate-400 font-medium block">Current Balance</span>
+                  <span className="text-[11px] text-slate-400 font-medium block">
+                    {scope === 'month' ? `${selectedMonthLabel.split(' ')[0]} Balance` : 'Cumulative Balance'}
+                  </span>
                   <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
                     {isPos && 'Will get back'}
                     {isNeg && 'Needs to pay'}

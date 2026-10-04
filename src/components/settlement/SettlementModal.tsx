@@ -10,7 +10,18 @@ interface SettlementModalProps {
 }
 
 export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClose }) => {
-  const { balances, monthlyBalances, currency, recordSettlement, deleteSettlement, settlements, members, selectedMonthLabel } = useApp();
+  const {
+    balances,
+    monthlyBalances,
+    currency,
+    recordSettlement,
+    deleteSettlement,
+    settlements,
+    monthSettlements,
+    members,
+    selectedMonthLabel,
+    selectedMonth,
+  } = useApp();
   const [recordingId, setRecordingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [scope, setScope] = useState<'month' | 'all'>('month');
@@ -22,6 +33,7 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
   };
 
   const activeBalances = scope === 'month' ? monthlyBalances : balances;
+  const displaySettlements = scope === 'month' ? monthSettlements : settlements;
   const simplifiedTransactions = calculateSimplifiedSettlements(activeBalances);
 
   const debtors = activeBalances.filter((b) => b.net_balance < -0.01);
@@ -33,11 +45,19 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
   const handleSettle = async (txnKey: string, fromId: string, toId: string, amount: number, fromName: string, toName: string) => {
     setRecordingId(txnKey);
     try {
+      const today = new Date();
+      const currentMonthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+      // When settling for a specific month, record the date in that month (e.g. 2026-09-30)
+      const settlementDate = scope === 'month' && selectedMonth !== currentMonthKey
+        ? `${selectedMonth}-30`
+        : today.toISOString().split('T')[0];
+
       await recordSettlement(
         fromId,
         toId,
         amount,
-        `Settled ₹${amount} from ${fromName} to ${toName}`
+        `Settled ₹${amount} from ${fromName} to ${toName}`,
+        settlementDate
       );
 
       // Confetti burst
@@ -211,17 +231,19 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
           </div>
 
           {/* Recorded Paid Settlements History (Syncs across all logins) */}
-          {settlements.length > 0 && (
+          {displaySettlements.length > 0 && (
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                  <span>Settled & Paid History ({settlements.length})</span>
+                  <span>Settled & Paid History ({displaySettlements.length})</span>
                 </span>
-                <span className="text-[10px] text-slate-400">Visible Across All Logins</span>
+                <span className="text-[10px] text-slate-400">
+                  {scope === 'month' ? selectedMonthLabel : 'Visible Across All Logins'}
+                </span>
               </div>
               <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                {settlements.map((s) => (
+                {displaySettlements.map((s) => (
                   <div
                     key={s.id}
                     className="p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/40 flex items-center justify-between text-xs"

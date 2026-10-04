@@ -44,7 +44,7 @@ interface AppContextType {
   updateMember: (id: string, updates: Partial<GroupMember>) => Promise<GroupMember>;
   deleteMember: (id: string) => Promise<{ success: boolean; reason?: string }>;
   updateGroup: (updates: Partial<Group>) => Promise<Group>;
-  recordSettlement: (fromId: string, toId: string, amount: number, notes?: string) => Promise<SettlementRecord>;
+  recordSettlement: (fromId: string, toId: string, amount: number, notes?: string, date?: string) => Promise<SettlementRecord>;
   deleteSettlement: (id: string) => Promise<void>;
   resetDemoData: () => void;
   setUser: (user: User | null) => Promise<void>;
@@ -69,17 +69,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [loading, setLoading] = useState(true);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  // Selected Month State (defaults to current month)
-  const currentMonthKey = useMemo(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-  }, []);
-
+  // Selected Month State (only September and October 2026 allowed)
   const [selectedMonth, setSelectedMonthState] = useState<string>(() => {
-    return localStorage.getItem('mealmates_selected_month') || currentMonthKey;
+    const saved = localStorage.getItem('mealmates_selected_month');
+    if (saved === '2026-09' || saved === '2026-10') return saved;
+    return '2026-10';
   });
 
   const setSelectedMonth = useCallback((month: string) => {
+    if (month !== '2026-09' && month !== '2026-10') return;
     setSelectedMonthState(month);
     try {
       localStorage.setItem('mealmates_selected_month', month);
@@ -89,27 +87,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   const monthOptions = useMemo(() => {
-    const set = new Set<string>();
-    set.add(currentMonthKey);
-    const d = new Date();
-    for (let i = 1; i <= 6; i++) {
-      const past = new Date(d.getFullYear(), d.getMonth() - i, 1);
-      set.add(`${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2, '0')}`);
-    }
-    meals.forEach((m) => {
-      if (m.date) set.add(m.date.substring(0, 7));
-    });
-
-    return Array.from(set)
-      .sort()
-      .reverse()
-      .map((key) => {
-        const [y, m] = key.split('-');
-        const date = new Date(Number(y), Number(m) - 1, 1);
-        const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        return { key, label };
-      });
-  }, [meals, currentMonthKey]);
+    // Strictly keep only September 2026 and October 2026 as required
+    return [
+      { key: '2026-10', label: 'October 2026' },
+      { key: '2026-09', label: 'September 2026' },
+    ];
+  }, []);
 
   const selectedMonthLabel = useMemo(() => {
     const opt = monthOptions.find((o: { key: string; label: string }) => o.key === selectedMonth);
@@ -302,9 +285,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  const recordSettlement = async (fromId: string, toId: string, amount: number, notes?: string) => {
+  const recordSettlement = async (fromId: string, toId: string, amount: number, notes?: string, date?: string) => {
     try {
-      const res = await storageService.recordSettlement(fromId, toId, amount, notes);
+      const res = await storageService.recordSettlement(fromId, toId, amount, notes, date);
       await loadData();
       showToast('Settlement recorded successfully! 🎉', 'success');
       return res;
