@@ -8,22 +8,27 @@ interface StatCardsProps {
 }
 
 export const StatCards: React.FC<StatCardsProps> = ({ selectedMonth }) => {
-  const { meals, balances, currency, user } = useApp();
+  const { meals, monthlyBalances, currency, user, selectedMonthLabel } = useApp();
 
   // Filter meals for the selected month
   const monthMeals = meals.filter((m) => m.date.startsWith(selectedMonth));
   const totalMealsCount = monthMeals.length;
   const totalExpense = monthMeals.reduce((acc, m) => acc + (Number(m.total_amount) || 0), 0);
 
+  // Check if selectedMonth is the current real-world month
+  const today = new Date();
+  const currentMonthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  const isCurrentMonth = selectedMonth === currentMonthKey;
+
   // Today's Expense
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = today.toISOString().split('T')[0];
   const todayMeals = meals.filter((m) => m.date === todayStr);
   const todayExpense = todayMeals.reduce((acc, m) => acc + (Number(m.total_amount) || 0), 0);
 
-  // Current logged in user balance or first member
-  const currentMemberBalance = balances.find((b) => 
+  // Current logged in user balance for this selected month!
+  const currentMemberBalance = monthlyBalances.find((b) => 
     user?.name && b.member_name.toLowerCase() === user.name.toLowerCase()
-  ) || balances[0];
+  ) || monthlyBalances[0];
 
   const myNetBalance = currentMemberBalance?.net_balance || 0;
   const isPositive = myNetBalance > 0.01;
@@ -127,22 +132,26 @@ export const StatCards: React.FC<StatCardsProps> = ({ selectedMonth }) => {
         </div>
       </div>
 
-      {/* 4. Today's Expense */}
+      {/* 4. Today's Expense / Month Average */}
       <div className="bg-white dark:bg-slate-800/90 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs hover:shadow-md transition-all duration-200">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            Today's Expense
+            {isCurrentMonth ? "Today's Expense" : "Avg Per Meal"}
           </span>
           <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-            <CalendarDays className="w-5 h-5" />
+            {isCurrentMonth ? <CalendarDays className="w-5 h-5" /> : <TrendingUp className="w-5 h-5" />}
           </div>
         </div>
         <div className="mt-3">
           <div className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-            {formatCurrency(todayExpense, currency)}
+            {isCurrentMonth
+              ? formatCurrency(todayExpense, currency)
+              : formatCurrency(totalMealsCount > 0 ? Math.round(totalExpense / totalMealsCount) : 0, currency)}
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            {todayMeals.length > 0 ? `${todayMeals.length} meals entered today` : 'No meals recorded today yet'}
+            {isCurrentMonth
+              ? (todayMeals.length > 0 ? `${todayMeals.length} meals entered today` : 'No meals recorded today yet')
+              : `Across ${totalMealsCount} meals in ${selectedMonthLabel}`}
           </p>
         </div>
       </div>

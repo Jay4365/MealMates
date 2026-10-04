@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import type { Group, GroupMember, Meal, MemberBalance, User, SettlementRecord } from '../types';
 import { storageService } from '../services/storageService';
 import { calculateMemberBalances } from '../utils/calculations';
@@ -26,6 +26,15 @@ interface AppContextType {
   toasts: Toast[];
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   removeToast: (id: string) => void;
+
+  // Selected Month State & Derived Monthly Data
+  selectedMonth: string;
+  setSelectedMonth: (month: string) => void;
+  monthOptions: { key: string; label: string }[];
+  selectedMonthLabel: string;
+  monthlyBalances: MemberBalance[];
+  monthMeals: Meal[];
+  monthSettlements: SettlementRecord[];
   
   // Actions
   addMeal: (mealData: Omit<Meal, 'id' | 'created_at' | 'group_id'>) => Promise<Meal>;
@@ -59,6 +68,70 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [balances, setBalances] = useState<MemberBalance[]>([]);
   const [loading, setLoading] = useState(true);
   const [toasts, setToasts] = useState<Toast[]>([]);
+
+  // Selected Month State (defaults to current month)
+  const currentMonthKey = useMemo(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }, []);
+
+  const [selectedMonth, setSelectedMonthState] = useState<string>(() => {
+    return localStorage.getItem('mealmates_selected_month') || currentMonthKey;
+  });
+
+  const setSelectedMonth = useCallback((month: string) => {
+    setSelectedMonthState(month);
+    try {
+      localStorage.setItem('mealmates_selected_month', month);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const monthOptions = useMemo(() => {
+    const set = new Set<string>();
+    set.add(currentMonthKey);
+    const d = new Date();
+    for (let i = 1; i <= 6; i++) {
+      const past = new Date(d.getFullYear(), d.getMonth() - i, 1);
+      set.add(`${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2, '0')}`);
+    }
+    meals.forEach((m) => {
+      if (m.date) set.add(m.date.substring(0, 7));
+    });
+
+    return Array.from(set)
+      .sort()
+      .reverse()
+      .map((key) => {
+        const [y, m] = key.split('-');
+        const date = new Date(Number(y), Number(m) - 1, 1);
+        const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        return { key, label };
+      });
+  }, [meals, currentMonthKey]);
+
+  const selectedMonthLabel = useMemo(() => {
+    const opt = monthOptions.find((o: { key: string; label: string }) => o.key === selectedMonth);
+    if (opt) return opt.label;
+    const [y, m] = selectedMonth.split('-');
+    const date = new Date(Number(y), (Number(m) || 1) - 1, 1);
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }, [monthOptions, selectedMonth]);
+
+  // Meals and settlements specifically for the selected month
+  const monthMeals = useMemo(() => {
+    return meals.filter((m) => m.date.startsWith(selectedMonth));
+  }, [meals, selectedMonth]);
+
+  const monthSettlements = useMemo(() => {
+    return settlements.filter((s) => s.date.startsWith(selectedMonth));
+  }, [settlements, selectedMonth]);
+
+  // Balances calculated strictly for the selected month
+  const monthlyBalances = useMemo(() => {
+    return calculateMemberBalances(members, monthMeals, monthSettlements);
+  }, [members, monthMeals, monthSettlements]);
   
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     return (localStorage.getItem('mealmates_theme') as 'light' | 'dark') || 'light';
@@ -270,6 +343,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         meals,
         balances,
         settlements,
+        selectedMonth,
+        setSelectedMonth,
+        monthOptions,
+        selectedMonthLabel,
+        monthlyBalances,
+        monthMeals,
+        monthSettlements,
         isSupabaseConnected: isConfigured,
         theme,
         toggleTheme,

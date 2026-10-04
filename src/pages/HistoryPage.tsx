@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import type { Meal } from '../types';
 import { formatCurrency } from '../utils/calculations';
@@ -30,25 +30,22 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
   onViewMeal,
   onEditMeal,
 }) => {
-  const { meals, members, currency, deleteMeal } = useApp();
+  const { meals, members, currency, deleteMeal, selectedMonth: appSelectedMonth, setSelectedMonth: setAppSelectedMonth, monthOptions } = useApp();
 
   // Filters state
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState<string>('all');
+  const [selectedMonth, setSelectedMonth] = useState<string>(appSelectedMonth || 'all');
   const [selectedMealType, setSelectedMealType] = useState<string>('all');
   const [selectedPaidBy, setSelectedPaidBy] = useState<string>('all');
   const [selectedEater, setSelectedEater] = useState<string>('all');
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
 
-  // Extract unique months available in meals
-  const monthsAvailable = useMemo(() => {
-    const set = new Set<string>();
-    meals.forEach((m: Meal) => {
-      const ym = m.date.substring(0, 7);
-      set.add(ym);
-    });
-    return Array.from(set).sort().reverse();
-  }, [meals]);
+  // Keep synced when appSelectedMonth changes
+  useEffect(() => {
+    if (appSelectedMonth) {
+      setSelectedMonth(appSelectedMonth);
+    }
+  }, [appSelectedMonth]);
 
   // Filtered meals
   const filteredMeals = useMemo(() => {
@@ -286,13 +283,19 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
             </label>
             <select
               value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 outline-hidden"
+              onChange={(e) => {
+                const val = e.target.value;
+                setSelectedMonth(val);
+                if (val !== 'all') {
+                  setAppSelectedMonth(val);
+                }
+              }}
+              className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 outline-hidden cursor-pointer"
             >
               <option value="all">All Months</option>
-              {monthsAvailable.map((m) => (
-                <option key={m} value={m}>
-                  {new Date(m + '-01T00:00:00').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              {monthOptions.map((opt) => (
+                <option key={opt.key} value={opt.key}>
+                  {opt.label}
                 </option>
               ))}
             </select>

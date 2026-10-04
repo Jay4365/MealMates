@@ -10,9 +10,10 @@ interface SettlementModalProps {
 }
 
 export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClose }) => {
-  const { balances, currency, recordSettlement, deleteSettlement, settlements, members } = useApp();
+  const { balances, monthlyBalances, currency, recordSettlement, deleteSettlement, settlements, members, selectedMonthLabel } = useApp();
   const [recordingId, setRecordingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [scope, setScope] = useState<'month' | 'all'>('month');
 
   if (!isOpen) return null;
 
@@ -20,10 +21,11 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
     return members.find((m) => m.id === id)?.name || 'Roommate';
   };
 
-  const simplifiedTransactions = calculateSimplifiedSettlements(balances);
+  const activeBalances = scope === 'month' ? monthlyBalances : balances;
+  const simplifiedTransactions = calculateSimplifiedSettlements(activeBalances);
 
-  const debtors = balances.filter((b) => b.net_balance < -0.01);
-  const creditors = balances.filter((b) => b.net_balance > 0.01);
+  const debtors = activeBalances.filter((b) => b.net_balance < -0.01);
+  const creditors = activeBalances.filter((b) => b.net_balance > 0.01);
 
   const totalDebt = debtors.reduce((acc, b) => acc + Math.abs(b.net_balance), 0);
   const totalCredit = creditors.reduce((acc, b) => acc + b.net_balance, 0);
@@ -94,6 +96,30 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
 
         {/* Content */}
         <div className="p-6 space-y-5">
+          {/* Scope Selector: Month vs All-Time */}
+          <div className="flex items-center justify-between bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
+            <button
+              onClick={() => setScope('month')}
+              className={`flex-1 py-1.5 rounded-lg text-center transition-all ${
+                scope === 'month'
+                  ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-bold'
+                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+              }`}
+            >
+              {selectedMonthLabel}
+            </button>
+            <button
+              onClick={() => setScope('all')}
+              className={`flex-1 py-1.5 rounded-lg text-center transition-all ${
+                scope === 'all'
+                  ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-bold'
+                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+              }`}
+            >
+              All Time
+            </button>
+          </div>
+
           {/* Summary Balance Check */}
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="p-3 rounded-xl bg-rose-50/80 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-900/40">

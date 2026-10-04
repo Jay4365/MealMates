@@ -10,20 +10,31 @@ interface TodaysMealsProps {
 }
 
 export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewMeal }) => {
-  const { meals, members, currency } = useApp();
+  const { meals, members, currency, selectedMonth, selectedMonthLabel } = useApp();
 
-  // Find meals for today
-  const todayStr = new Date().toISOString().split('T')[0];
-  const displayMeals = meals.filter((m) => m.date === todayStr);
+  const today = new Date();
+  const currentMonthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  const isCurrentMonth = selectedMonth === currentMonthKey;
 
-  const lunchMeal = displayMeals.find((m) => m.meal_type === 'lunch');
-  const dinnerMeal = displayMeals.find((m) => m.meal_type === 'dinner');
+  const todayStr = today.toISOString().split('T')[0];
+
+  // For current month, look for today's meals.
+  // For another month, look for meals in that month (most recent first).
+  const monthMeals = meals.filter((m) => m.date.startsWith(selectedMonth));
+
+  const lunchMeal = isCurrentMonth
+    ? meals.find((m) => m.date === todayStr && m.meal_type === 'lunch')
+    : monthMeals.find((m) => m.meal_type === 'lunch');
+
+  const dinnerMeal = isCurrentMonth
+    ? meals.find((m) => m.date === todayStr && m.meal_type === 'dinner')
+    : monthMeals.find((m) => m.meal_type === 'dinner');
 
   const getMemberName = (id: string) => {
     return members.find((m) => m.id === id)?.name || 'Unknown';
   };
 
-  const formattedDate = new Date().toLocaleDateString('en-US', {
+  const formattedDate = today.toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
@@ -35,13 +46,13 @@ export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewM
       <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700/60">
         <div>
           <h3 className="font-bold text-slate-900 dark:text-white text-lg flex items-center gap-2">
-            <span>Today's Meals</span>
+            <span>{isCurrentMonth ? "Today's Meals" : "Meals Overview"}</span>
             <span className="text-xs font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">
-              {formattedDate}
+              {isCurrentMonth ? formattedDate : selectedMonthLabel}
             </span>
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Real-time split for lunch and dinner
+            {isCurrentMonth ? "Real-time split for lunch and dinner" : `Latest lunch and dinner for ${selectedMonthLabel}`}
           </p>
         </div>
         <button
@@ -67,7 +78,7 @@ export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewM
                   Lunch
                 </h4>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Afternoon meal
+                  {isCurrentMonth ? 'Afternoon meal' : (lunchMeal ? `Latest: ${lunchMeal.date}` : 'Afternoon meal')}
                 </span>
               </div>
             </div>
@@ -117,11 +128,11 @@ export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewM
           ) : (
             <div className="my-6 text-center py-4">
               <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
-                No lunch recorded today
+                No lunch recorded {isCurrentMonth ? 'today' : `in ${selectedMonthLabel}`}
               </p>
               <button
                 onClick={() => onOpenAddMeal('lunch')}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 dark:hover:bg-amber-900/60 transition-colors"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 dark:hover:bg-amber-900/60 transition-colors cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add Lunch
@@ -142,7 +153,7 @@ export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewM
                   Dinner
                 </h4>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Evening meal
+                  {isCurrentMonth ? 'Evening meal' : (dinnerMeal ? `Latest: ${dinnerMeal.date}` : 'Evening meal')}
                 </span>
               </div>
             </div>
@@ -192,11 +203,11 @@ export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewM
           ) : (
             <div className="my-6 text-center py-4">
               <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
-                No dinner recorded today
+                No dinner recorded {isCurrentMonth ? 'today' : `in ${selectedMonthLabel}`}
               </p>
               <button
                 onClick={() => onOpenAddMeal('dinner')}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-indigo-700 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-950/60 hover:bg-indigo-200 dark:hover:bg-indigo-900/60 transition-colors"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-indigo-700 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-950/60 hover:bg-indigo-200 dark:hover:bg-indigo-900/60 transition-colors cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add Dinner

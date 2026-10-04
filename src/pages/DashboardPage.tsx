@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { StatCards } from '../components/dashboard/StatCards';
 import { TodaysMeals } from '../components/dashboard/TodaysMeals';
@@ -26,40 +26,15 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   onOpenSettlement,
   onNavigateTab,
 }) => {
-  const { user, meals, members, currency } = useApp();
-  const currentMonthKey = useMemo(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-  }, []);
+  const { user, meals, members, currency, selectedMonth, setSelectedMonth, monthOptions, selectedMonthLabel } = useApp();
 
-  const [selectedMonth, setSelectedMonth] = useState<string>(currentMonthKey);
+  // Filter meals strictly for the selected month
+  const monthMeals = useMemo(() => {
+    return meals.filter((m) => m.date.startsWith(selectedMonth));
+  }, [meals, selectedMonth]);
 
-  // Dynamically generate month options based on current date and recorded meals
-  const monthOptions = useMemo(() => {
-    const set = new Set<string>();
-    set.add(currentMonthKey);
-    const d = new Date();
-    for (let i = 1; i <= 3; i++) {
-      const past = new Date(d.getFullYear(), d.getMonth() - i, 1);
-      set.add(`${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2, '0')}`);
-    }
-    meals.forEach((m) => {
-      if (m.date) set.add(m.date.substring(0, 7));
-    });
-
-    return Array.from(set)
-      .sort()
-      .reverse()
-      .map((key) => {
-        const [y, m] = key.split('-');
-        const date = new Date(Number(y), Number(m) - 1, 1);
-        const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        return { key, label };
-      });
-  }, [meals, currentMonthKey]);
-
-  // Recent 5 meals
-  const recentMeals = meals.slice(0, 5);
+  // Recent 5 meals in selected month
+  const recentMeals = monthMeals.slice(0, 5);
 
   const getMemberName = (id: string) => {
     return members.find((m) => m.id === id)?.name || 'Unknown';
@@ -144,10 +119,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700/60">
           <div>
             <h3 className="font-bold text-slate-900 dark:text-white text-base">
-              Recent Meals
+              Recent Meals ({selectedMonthLabel})
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Latest lunch and dinner records
+              Latest recorded meals in {selectedMonthLabel}
             </p>
           </div>
           <button
@@ -162,15 +137,17 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         {recentMeals.length === 0 ? (
           <div className="py-12 text-center">
             <Utensils className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">No meals yet</h4>
+            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+              No meals recorded in {selectedMonthLabel}
+            </h4>
             <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-              Start by adding your first lunch or dinner.
+              No lunch or dinner has been entered for this month yet.
             </p>
             <button
               onClick={() => onOpenAddMeal()}
-              className="mt-4 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs hover:bg-emerald-700 transition-colors"
+              className="mt-4 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs hover:bg-emerald-700 transition-colors cursor-pointer"
             >
-              + Add Meal
+              + Add Meal for {selectedMonthLabel}
             </button>
           </div>
         ) : (

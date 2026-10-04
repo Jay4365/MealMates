@@ -17,9 +17,18 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
   initialType = 'lunch',
   editingMeal = null,
 }) => {
-  const { activeMembers, currency, addMeal, updateMeal, user } = useApp();
+  const { activeMembers, currency, addMeal, updateMeal, user, selectedMonth } = useApp();
 
-  const [date, setDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
+  const getInitialDate = () => {
+    const today = new Date();
+    const currentMonthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    if (selectedMonth && selectedMonth !== currentMonthKey) {
+      return `${selectedMonth}-01`;
+    }
+    return today.toISOString().split('T')[0];
+  };
+
+  const [date, setDate] = useState<string>(getInitialDate);
   const [mealType, setMealType] = useState<MealType>(initialType);
   const [amount, setAmount] = useState<string>('');
   const [paidBy, setPaidBy] = useState<string>('');
@@ -38,7 +47,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
       setEaterIds(editingMeal.eater_ids || []);
       setNotes(editingMeal.notes || '');
     } else {
-      setDate(new Date().toISOString().split('T')[0]);
+      setDate(getInitialDate());
       setMealType(initialType);
       setAmount('');
       setNotes('');
@@ -51,7 +60,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
       setPaidBy(myMember?.id || '');
     }
     setErrorMsg(null);
-  }, [editingMeal, initialType, activeMembers, user, isOpen]);
+  }, [editingMeal, initialType, activeMembers, user, isOpen, selectedMonth]);
 
   // Real-time calculation computation
   const numAmount = parseFloat(amount) || 0;

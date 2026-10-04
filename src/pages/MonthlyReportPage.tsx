@@ -26,14 +26,7 @@ interface MonthlyReportPageProps {
 }
 
 export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSettlementModal }) => {
-  const { meals, members, currency, group, user, settlements } = useApp();
-
-  const currentMonthKey = useMemo(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-  }, []);
-
-  const [selectedMonth, setSelectedMonth] = useState<string>(currentMonthKey);
+  const { meals, members, currency, group, user, settlements, selectedMonth, setSelectedMonth, monthOptions } = useApp();
   
   // Selected member for individual statement (defaults to current user or first member)
   const defaultMember = members.find(
@@ -49,29 +42,6 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
 
   // View mode: 'personal' (Person-wise Statement) or 'all' (All Roommates Overview)
   const [viewMode, setViewMode] = useState<'personal' | 'all'>('personal');
-
-  const monthOptions = useMemo(() => {
-    const set = new Set<string>();
-    set.add(currentMonthKey);
-    const d = new Date();
-    for (let i = 1; i <= 3; i++) {
-      const past = new Date(d.getFullYear(), d.getMonth() - i, 1);
-      set.add(`${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2, '0')}`);
-    }
-    meals.forEach((m) => {
-      if (m.date) set.add(m.date.substring(0, 7));
-    });
-
-    return Array.from(set)
-      .sort()
-      .reverse()
-      .map((key) => {
-        const [y, m] = key.split('-');
-        const date = new Date(Number(y), Number(m) - 1, 1);
-        const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        return { key, label };
-      });
-  }, [meals, currentMonthKey]);
 
   const stats = useMemo(() => {
     return generateMonthlyStats(meals, members, selectedMonth, settlements);

@@ -8,29 +8,72 @@ interface MemberBalancesCardProps {
 }
 
 export const MemberBalancesCard: React.FC<MemberBalancesCardProps> = ({ onOpenSettlement }) => {
-  const { balances, currency } = useApp();
+  const { balances, monthlyBalances, currency, selectedMonthLabel } = useApp();
+  const [viewScope, setViewScope] = React.useState<'month' | 'all'>('month');
+
+  const displayBalances = viewScope === 'month' ? monthlyBalances : balances;
+  const isMonthEmpty = viewScope === 'month' && displayBalances.every((b) => b.meals_eaten_count === 0 && b.total_paid === 0);
 
   return (
     <div className="bg-white dark:bg-slate-800/90 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700/60">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700/60 gap-2">
         <div>
           <h3 className="font-bold text-slate-900 dark:text-white text-lg flex items-center gap-2">
             <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <span>Roommate Balances</span>
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Real-time individual ledger
+            {viewScope === 'month' ? `Ledger for ${selectedMonthLabel}` : 'All-time cumulative ledger'}
           </p>
         </div>
-        <button
-          onClick={onOpenSettlement}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 font-semibold text-xs border border-emerald-200/60 dark:border-emerald-800/60 transition-colors active:scale-95"
-        >
-          <Scale className="w-3.5 h-3.5" />
-          <span>Settle Up</span>
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          {/* Scope toggle: Month vs All-Time */}
+          <div className="flex items-center bg-slate-100 dark:bg-slate-750 p-0.5 rounded-xl text-xs font-semibold border border-slate-200/60 dark:border-slate-700/60">
+            <button
+              onClick={() => setViewScope('month')}
+              className={`px-2.5 py-1 rounded-lg transition-all ${
+                viewScope === 'month'
+                  ? 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-xs font-bold'
+                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+              }`}
+            >
+              {selectedMonthLabel.split(' ')[0]}
+            </button>
+            <button
+              onClick={() => setViewScope('all')}
+              className={`px-2.5 py-1 rounded-lg transition-all ${
+                viewScope === 'all'
+                  ? 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-xs font-bold'
+                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+              }`}
+            >
+              All Time
+            </button>
+          </div>
+
+          <button
+            onClick={onOpenSettlement}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 font-semibold text-xs border border-emerald-200/60 dark:border-emerald-800/60 transition-colors active:scale-95 cursor-pointer"
+          >
+            <Scale className="w-3.5 h-3.5" />
+            <span>Settle Up</span>
+          </button>
+        </div>
       </div>
+
+      {/* Notice if no meals in the selected month */}
+      {isMonthEmpty && (
+        <div className="bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/40 text-amber-800 dark:text-amber-300 text-xs px-3 py-2 rounded-xl mt-3 flex items-center justify-between">
+          <span>No meals recorded for {selectedMonthLabel} yet. All balances are ₹0.</span>
+          <button
+            onClick={() => setViewScope('all')}
+            className="underline font-semibold hover:text-amber-900 ml-2"
+          >
+            View All Time
+          </button>
+        </div>
+      )}
 
       {/* Legend Helper */}
       <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/50 px-3 py-1.5 rounded-lg my-3 border border-slate-100 dark:border-slate-800">
@@ -46,7 +89,7 @@ export const MemberBalancesCard: React.FC<MemberBalancesCardProps> = ({ onOpenSe
 
       {/* Balance List */}
       <div className="divide-y divide-slate-100 dark:divide-slate-700/60 flex-1 overflow-y-auto">
-        {balances.map((b) => {
+        {displayBalances.map((b) => {
           const isPos = b.net_balance > 0.01;
           const isNeg = b.net_balance < -0.01;
 
