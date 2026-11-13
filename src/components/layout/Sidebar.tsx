@@ -2,12 +2,12 @@ import React from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   LayoutDashboard,
-  PlusCircle,
   History,
   FileBarChart2,
   Users,
   Settings,
-  Sparkles,
+  PlusCircle,
+  Home,
 } from 'lucide-react';
 
 export type NavigationTab = 'dashboard' | 'history' | 'monthly-report' | 'members' | 'settings';
@@ -34,17 +34,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'history' as NavigationTab,
-      label: 'Meal History',
+      label: 'History',
       icon: History,
     },
     {
       id: 'monthly-report' as NavigationTab,
-      label: 'Monthly Statement',
+      label: 'Statement',
       icon: FileBarChart2,
     },
     {
       id: 'members' as NavigationTab,
-      label: 'Roommates Roster',
+      label: 'Roommates',
       icon: Users,
     },
     {
@@ -55,82 +55,55 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 border-r border-slate-200/70 dark:border-white/[0.06] bg-white/70 dark:bg-[#07090e]/70 backdrop-blur-xl h-[calc(100vh-4rem)] sticky top-16 transition-colors select-none">
-      {/* Group Household Card */}
-      <div className="p-4 pb-2">
-        <div className="relative overflow-hidden p-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-violet-500/5 to-fuchsia-500/10 border border-indigo-500/20 dark:border-indigo-500/15 shadow-xs">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[10px] font-extrabold text-indigo-700 dark:text-indigo-400 uppercase tracking-widest flex items-center gap-1.5">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-              </span>
-              Active Household
-            </span>
-          </div>
-          <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-tight truncate">
-            {group.name}
-          </h3>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
-            <span>Currency:</span>
-            <span className="font-bold text-slate-800 dark:text-slate-200 bg-white/60 dark:bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-200/60 dark:border-slate-700/60">
-              {group.currency} (INR)
-            </span>
-          </p>
+    <aside className="hidden md:flex flex-col w-56 sticky top-20 h-[calc(100vh-6rem)] shrink-0 select-none">
+      {/* Bento Navigation Dock */}
+      <div className="bento-card p-3 flex-1 flex flex-col justify-between overflow-hidden">
+        <div>
+          {/* Quick Add CTA */}
+          <button
+            onClick={onOpenAddMeal}
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-sm active:scale-95 transition-all cursor-pointer mb-3"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>New Meal</span>
+          </button>
+
+          {/* Navigation Items */}
+          <nav className="space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentTab === item.id;
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onSelectTab(item.id)}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                    isActive
+                      ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.06]'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
         </div>
-      </div>
 
-      {/* Add Meal Direct Button */}
-      <div className="px-4 py-2">
-        <button
-          onClick={onOpenAddMeal}
-          className="shimmer-btn w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 active:scale-[0.97] text-white font-bold text-xs shadow-md shadow-indigo-500/25 transition-all duration-300 cursor-pointer"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>+ Add Meal Entry</span>
-        </button>
-      </div>
-
-      {/* Main Navigation links */}
-      <nav className="flex-1 px-3 py-3 space-y-1.5 overflow-y-auto">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = currentTab === item.id;
-
-          return (
-            <button
-              key={item.id}
-              onClick={() => onSelectTab(item.id)}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer relative group ${
-                isActive
-                  ? 'bg-gradient-to-r from-indigo-500/15 via-violet-500/10 to-transparent text-indigo-700 dark:text-indigo-300 shadow-xs border border-indigo-500/20 dark:border-indigo-500/20'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50'
-              }`}
-            >
-              {isActive && (
-                <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-indigo-500 to-violet-500"></span>
-              )}
-              <div className={`p-1.5 rounded-lg transition-all duration-200 ${
-                isActive
-                  ? 'bg-gradient-to-tr from-indigo-500 to-violet-500 text-white shadow-xs shadow-indigo-500/25'
-                  : 'text-slate-500 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200'
-              }`}>
-                <Icon className="w-4 h-4" />
-              </div>
-              <span className="truncate tracking-wide">{item.label}</span>
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* Bottom Pro Tip Footer */}
-      <div className="p-4 border-t border-slate-200/60 dark:border-white/[0.06]">
-        <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-50/60 to-violet-50/40 dark:from-indigo-950/30 dark:to-violet-950/20 border border-indigo-200/40 dark:border-indigo-800/30 text-[11px] text-slate-500 dark:text-slate-400">
-          <div className="flex items-center gap-1.5 font-bold text-indigo-700 dark:text-indigo-300 mb-1">
-            <Sparkles className="w-3.5 h-3.5 text-violet-500" />
-            <span>Fair Split Magic</span>
+        {/* Household Info Bento Footnote */}
+        <div className="p-3.5 rounded-2xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.04]">
+          <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider font-extrabold mb-1">
+            <Home className="w-3 h-3 text-rose-500" />
+            <span>Household</span>
           </div>
-          <span>Automatic math for lunch, dinner & instant settlements.</span>
+          <p className="font-extrabold text-xs text-slate-900 dark:text-white truncate">
+            {group.name}
+          </p>
+          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5 block">
+            Currency: {group.currency} (INR)
+          </span>
         </div>
       </div>
     </aside>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatCurrency } from '../../utils/calculations';
-import { Utensils, Wallet, TrendingUp, CalendarDays, ArrowDownRight, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { Utensils, TrendingUp, CalendarDays, ArrowDownRight, ArrowUpRight, CheckCircle2, Wallet } from 'lucide-react';
 
 interface StatCardsProps {
   selectedMonth: string; // "YYYY-MM"
@@ -38,90 +38,79 @@ export const StatCards: React.FC<StatCardsProps> = ({ selectedMonth }) => {
   const dinnerCount = monthMeals.filter((m) => m.meal_type === 'dinner').length;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 animate-fade-in-up">
-      {/* 1. Total Meals */}
-      <div className="glass-card hover-lift rounded-3xl p-5 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-28 h-28 bg-violet-500/10 dark:bg-violet-500/6 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up">
+      {/* 1. Total Meals Bento Card */}
+      <div className="bento-card p-5 flex flex-col justify-between">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Total Meals
           </span>
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-violet-500/15 to-fuchsia-500/15 text-violet-600 dark:text-violet-400 flex items-center justify-center shadow-xs border border-violet-500/25">
-            <Utensils className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+          <div className="w-9 h-9 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+            <Utensils className="w-4 h-4" />
           </div>
         </div>
-        <div className="mt-3.5">
-          <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+        <div className="mt-4">
+          <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
             {totalMealsCount}
           </div>
-          <div className="mt-2.5 flex items-center gap-1.5 flex-wrap">
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+          <div className="mt-3 flex items-center gap-1.5 flex-wrap">
+            <span className="bento-pill bg-amber-500/10 text-amber-700 dark:text-amber-400">
               ☀️ {lunchCount} Lunch
             </span>
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-lg bg-violet-500/10 text-violet-700 dark:text-violet-400 border border-violet-500/20">
+            <span className="bento-pill bg-indigo-500/10 text-indigo-700 dark:text-indigo-400">
               🌙 {dinnerCount} Dinner
             </span>
           </div>
         </div>
       </div>
 
-      {/* 2. Total Expense */}
-      <div className="glass-card hover-lift rounded-3xl p-5 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-28 h-28 bg-indigo-500/10 dark:bg-indigo-500/6 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
+      {/* 2. Total Expense Bento Card */}
+      <div className="bento-card p-5 flex flex-col justify-between">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Total Spent
           </span>
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500/15 to-cyan-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-xs border border-indigo-500/25">
-            <TrendingUp className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+          <div className="w-9 h-9 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <TrendingUp className="w-4 h-4" />
           </div>
         </div>
-        <div className="mt-3.5">
-          <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+        <div className="mt-4">
+          <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
             {formatCurrency(totalExpense, currency)}
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 font-medium flex items-center gap-1">
-            <span>In {selectedMonthLabel}</span>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-3 font-semibold flex items-center gap-1.5">
+            <span>{selectedMonthLabel}</span>
             <span>•</span>
-            <span className="text-indigo-600 dark:text-indigo-400 font-bold">
+            <span className="text-slate-900 dark:text-white font-bold">
               Avg {formatCurrency(totalMealsCount > 0 ? Math.round(totalExpense / totalMealsCount) : 0, currency)}/meal
             </span>
           </p>
         </div>
       </div>
 
-      {/* 3. My Net Ledger Balance */}
-      <div className={`glass-card hover-lift rounded-3xl p-5 relative overflow-hidden group ${
-        isPositive
-          ? 'border-emerald-500/30'
-          : isNegative
-          ? 'border-rose-500/30'
-          : 'border-slate-200/80 dark:border-white/10'
-      }`}>
-        <div className={`absolute top-0 right-0 w-28 h-28 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-500 pointer-events-none ${
-          isPositive ? 'bg-indigo-500/15' : isNegative ? 'bg-rose-500/15' : 'bg-slate-500/10'
-        }`}></div>
+      {/* 3. My Net Ledger Bento Card */}
+      <div className="bento-card p-5 flex flex-col justify-between">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate max-w-[140px]">
-            My Balance {currentMemberBalance?.member_name ? `(${currentMemberBalance.member_name})` : ''}
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate max-w-[130px]">
+            My Balance
           </span>
           <div
-            className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-xs border transition-colors ${
+            className={`w-9 h-9 rounded-2xl flex items-center justify-center ${
               isPositive
-                ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border-emerald-500/30'
+                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                 : isNegative
-                ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700'
+                ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                : 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-500'
             }`}
           >
-            <Wallet className="w-5 h-5 group-hover:rotate-6 transition-transform duration-300" />
+            <Wallet className="w-4 h-4" />
           </div>
         </div>
-        <div className="mt-3.5">
+        <div className="mt-4">
           <div
-            className={`text-3xl font-black tracking-tight flex items-center gap-1.5 ${
+            className={`text-3xl sm:text-4xl font-black tabular-nums tracking-tight flex items-center gap-1.5 ${
               isPositive
-                ? 'text-indigo-600 dark:text-indigo-400'
+                ? 'text-emerald-600 dark:text-emerald-400'
                 : isNegative
                 ? 'text-rose-600 dark:text-rose-400'
                 : 'text-slate-700 dark:text-slate-300'
@@ -129,63 +118,58 @@ export const StatCards: React.FC<StatCardsProps> = ({ selectedMonth }) => {
           >
             {isPositive && <ArrowUpRight className="w-7 h-7 stroke-[2.5]" />}
             {isNegative && <ArrowDownRight className="w-7 h-7 stroke-[2.5]" />}
-            {!isPositive && !isNegative && <CheckCircle2 className="w-6 h-6 text-indigo-500" />}
+            {!isPositive && !isNegative && <CheckCircle2 className="w-6 h-6 text-emerald-500" />}
             {formatCurrency(myNetBalance, currency, true)}
           </div>
-          <p className="text-[11px] mt-2 font-bold flex items-center gap-1">
+          <div className="mt-3">
             {isPositive && (
-              <span className="text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-lg border border-indigo-500/20">
-                You will receive {formatCurrency(Math.abs(myNetBalance), currency)}
+              <span className="bento-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                You get back {formatCurrency(Math.abs(myNetBalance), currency)}
               </span>
             )}
             {isNegative && (
-              <span className="text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-lg border border-rose-500/20">
+              <span className="bento-pill bg-rose-500/10 text-rose-700 dark:text-rose-400">
                 You owe {formatCurrency(Math.abs(myNetBalance), currency)}
               </span>
             )}
             {!isPositive && !isNegative && (
-              <span className="text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-lg border border-indigo-500/20">
-                All squared up • ₹0
+              <span className="bento-pill bg-black/[0.04] dark:bg-white/[0.06] text-slate-600 dark:text-slate-400">
+                All Settled Up
               </span>
-            )}
-          </p>
-        </div>
-      </div>
-
-      {/* 4. Today's Expense / Per Person Split */}
-      <div className="glass-card hover-lift rounded-3xl p-5 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-28 h-28 bg-cyan-500/10 dark:bg-cyan-500/6 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            {isCurrentMonth ? "Today's Expense" : "Avg Per Meal"}
-          </span>
-          <div className="w-10 h-10 rounded-2xl bg-amber-500/10 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shadow-xs border border-amber-500/20">
-            {isCurrentMonth ? (
-              <CalendarDays className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-            ) : (
-              <TrendingUp className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
             )}
           </div>
         </div>
-        <div className="mt-3.5">
-          <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+      </div>
+
+      {/* 4. Today's Expense Bento Card */}
+      <div className="bento-card p-5 flex flex-col justify-between">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            {isCurrentMonth ? "Today's Expense" : "Avg Per Head"}
+          </span>
+          <div className="w-9 h-9 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+            <CalendarDays className="w-4 h-4" />
+          </div>
+        </div>
+        <div className="mt-4">
+          <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
             {isCurrentMonth
               ? formatCurrency(todayExpense, currency)
               : formatCurrency(totalMealsCount > 0 ? Math.round(totalExpense / totalMealsCount) : 0, currency)}
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 font-medium">
+          <div className="mt-3 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
             {isCurrentMonth ? (
               todayMeals.length > 0 ? (
-                <span className="text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-500/10 px-2 py-0.5 rounded-lg border border-indigo-500/20">
-                  {todayMeals.length} {todayMeals.length === 1 ? 'meal' : 'meals'} recorded today
+                <span className="bento-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                  {todayMeals.length} {todayMeals.length === 1 ? 'meal' : 'meals'} today
                 </span>
               ) : (
-                <span className="text-slate-400 dark:text-slate-500">No meals logged today yet</span>
+                <span className="text-slate-400">No meals logged yet</span>
               )
             ) : (
-              <span>Across {totalMealsCount} meals in {selectedMonthLabel}</span>
+              <span>Across {totalMealsCount} meals</span>
             )}
-          </p>
+          </div>
         </div>
       </div>
     </div>

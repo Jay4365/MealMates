@@ -11,8 +11,8 @@ import {
   Utensils,
   Sun,
   Moon,
-  Sparkles,
   ArrowRight,
+  Sparkles,
 } from 'lucide-react';
 
 interface DashboardPageProps {
@@ -45,36 +45,35 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   const displayName = user?.name || members[0]?.name || 'Roommate';
 
   return (
-    <div className="space-y-7 animate-fade-in-up">
-      {/* Dashboard Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-5 animate-fade-in-up">
+      {/* Top Header Bento Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 dark:bg-indigo-500/15 border border-indigo-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3" /> Household Overview
+            <span className="bento-pill bg-black/[0.04] dark:bg-white/[0.08] text-slate-700 dark:text-slate-300">
+              <Sparkles className="w-3 h-3 text-rose-500" />
+              Room Dashboard
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            Welcome Back, <span className="gradient-text">{displayName}</span>! 👋
+            Hi, {displayName} 👋
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Real-time meal ledger, per-person calculations, and easy roommate settlements.
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+            Shared meal expenses, real-time splits & transparent settlements.
           </p>
         </div>
 
-        {/* Dynamic Month Selector */}
+        {/* Dynamic Month Selector Bento Capsule */}
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/90 dark:bg-slate-850/90 border border-slate-200/80 dark:border-white/[0.08] shadow-xs hover:border-indigo-500/40 transition-colors backdrop-blur-md">
-            <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-              <Calendar className="w-4 h-4" />
-            </div>
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white dark:bg-[#14151f] border border-black/[0.06] dark:border-white/[0.08] shadow-xs">
+            <Calendar className="w-4 h-4 text-rose-500" />
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="bg-transparent text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 outline-hidden cursor-pointer"
             >
               {monthOptions.map((opt: { key: string; label: string }) => (
-                <option key={opt.key} value={opt.key} className="dark:bg-slate-900 text-slate-900 dark:text-white font-semibold">
+                <option key={opt.key} value={opt.key} className="dark:bg-[#14151f] text-slate-900 dark:text-white font-semibold">
                   {opt.label}
                 </option>
               ))}
@@ -83,145 +82,131 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
       </div>
 
-      {/* Top 4 Summary Cards */}
+      {/* 4 Summary Stat Bento Boxes */}
       <StatCards selectedMonth={selectedMonth} />
 
-      {/* Personal Statement High-Impact Banner */}
-      <div className="p-5 rounded-3xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-white shadow-xl shadow-indigo-600/20 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
-        <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
-        <div className="absolute top-0 left-1/3 w-32 h-32 bg-fuchsia-400/20 rounded-full blur-3xl animate-aurora-1 pointer-events-none"></div>
-        <div className="flex items-center gap-4 relative z-10">
-          <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0 shadow-inner">
-            <Utensils className="w-6 h-6" />
+      {/* Hero Bento Banner */}
+      <div className="bento-card bento-hero p-6 sm:p-7 bg-slate-900 text-white dark:bg-[#181926] dark:border-white/[0.1] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white shrink-0">
+            <Utensils className="w-6 h-6 text-rose-400" />
           </div>
           <div>
-            <h4 className="font-black text-base sm:text-lg leading-tight flex items-center gap-2">
-              <span>Personal Monthly Ledger</span>
-              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-white/25 text-white">
+            <div className="flex items-center gap-2">
+              <h3 className="font-black text-base sm:text-lg tracking-tight">
+                Personal Monthly Ledger
+              </h3>
+              <span className="bento-pill bg-white/15 text-white text-[10px]">
                 {selectedMonthLabel}
               </span>
-            </h4>
-            <p className="text-xs text-indigo-100 mt-1 max-w-xl">
-              View your exact food share, total bills paid, and simplified settlement instructions with your roommates.
+            </div>
+            <p className="text-xs text-slate-300 dark:text-slate-400 mt-1 max-w-xl">
+              Break down your exact food consumption, payments made, and settle balances with roommates in one tap.
             </p>
           </div>
         </div>
         <button
           onClick={() => onNavigateTab('monthly-report')}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white text-indigo-700 font-extrabold text-xs shadow-md hover:bg-indigo-50 active:scale-95 transition-all shrink-0 self-start sm:self-auto cursor-pointer relative z-10"
+          className="bento-btn px-5 py-2.5 bg-white text-slate-900 hover:bg-slate-100 dark:bg-rose-500 dark:text-white dark:hover:bg-rose-600 rounded-2xl text-xs font-bold shadow-sm shrink-0 self-start sm:self-auto cursor-pointer"
         >
-          <span>Open My Statement</span>
+          <span>View Statement</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Dual Section: Today's Meals & Member Balances */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Bento Grid: Today's Meals (Left) & Member Balances (Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Today's Meals (7 cols) */}
         <div className="lg:col-span-7">
-          <TodaysMeals onOpenAddMeal={onOpenAddMeal} onViewMeal={onViewMeal} />
+          <TodaysMeals
+            onOpenAddMeal={onOpenAddMeal}
+            onViewMeal={onViewMeal}
+          />
         </div>
 
         {/* Member Balances (5 cols) */}
         <div className="lg:col-span-5">
-          <MemberBalancesCard onOpenSettlement={onOpenSettlement} />
+          <MemberBalancesCard
+            onOpenSettlement={onOpenSettlement}
+            onNavigateToMembers={() => onNavigateTab('members')}
+          />
         </div>
       </div>
 
-      {/* Recent Meal History Card */}
-      <div className="glass-card rounded-3xl p-6 relative overflow-hidden">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200/60 dark:border-white/[0.06]">
+      {/* Recent Meals Bento Card */}
+      <div className="bento-card p-5 sm:p-6">
+        <div className="flex items-center justify-between pb-3.5 border-b border-black/[0.05] dark:border-white/[0.06]">
           <div>
-            <h3 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
-              <span>Recent Meals</span>
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                ({selectedMonthLabel})
-              </span>
+            <h3 className="font-black text-base text-slate-900 dark:text-white">
+              Recent Meals in {selectedMonthLabel}
             </h3>
-            <p className="text-xs text-slate-400 dark:text-slate-500">
-              Latest food expenses entered in {selectedMonthLabel}
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Latest recorded breakfast, lunch & dinner splits
             </p>
           </div>
+
           <button
             onClick={() => onNavigateTab('history')}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-emerald-700 transition-colors cursor-pointer"
+            className="flex items-center gap-1 text-xs font-bold text-rose-500 hover:text-rose-600 transition-colors cursor-pointer"
           >
-            <span>View All</span>
+            <span>All History</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
         {recentMeals.length === 0 ? (
-          <div className="py-12 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mx-auto mb-3">
-              <Utensils className="w-7 h-7" />
-            </div>
-            <h4 className="text-sm font-extrabold text-slate-800 dark:text-slate-200">
-              No meals recorded in {selectedMonthLabel}
-            </h4>
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
-              Start by logging your lunch or dinner to split the cost automatically with roommates.
-            </p>
+          <div className="py-10 text-center text-slate-400">
+            <Utensils className="w-8 h-8 mx-auto mb-2 opacity-40 text-slate-400" />
+            <p className="text-xs font-bold">No meals recorded yet in {selectedMonthLabel}.</p>
             <button
-              onClick={() => onOpenAddMeal()}
-              className="mt-4 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-bold shadow-md shadow-indigo-500/20 hover:from-indigo-500 hover:to-violet-500 transition-all cursor-pointer active:scale-95"
+              onClick={() => onOpenAddMeal('lunch')}
+              className="mt-3 text-xs font-extrabold text-rose-500 hover:underline cursor-pointer"
             >
-              + Add Meal for {selectedMonthLabel}
+              + Add First Meal
             </button>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100 dark:divide-white/[0.05] mt-2">
-            {recentMeals.map((meal: Meal) => {
+          <div className="divide-y divide-black/[0.04] dark:divide-white/[0.05] mt-1">
+            {recentMeals.map((meal) => {
               const isLunch = meal.meal_type === 'lunch';
-              const eaterCount = meal.eater_ids?.length || 1;
-              const perPerson = Math.round((meal.total_amount / eaterCount) * 100) / 100;
-              const formattedDate = new Date(meal.date + 'T00:00:00').toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-              });
-
               return (
                 <div
                   key={meal.id}
                   onClick={() => onViewMeal(meal)}
-                  className="py-3 px-3 flex items-center justify-between hover:bg-slate-50/80 dark:hover:bg-slate-800/40 rounded-2xl transition-all duration-200 cursor-pointer group"
+                  className="py-3 px-2 flex items-center justify-between hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-2xl transition-colors cursor-pointer"
                 >
-                  <div className="flex items-center gap-3.5">
+                  <div className="flex items-center gap-3">
                     <div
-                      className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-xs transition-transform group-hover:scale-105 ${
+                      className={`w-9 h-9 rounded-2xl flex items-center justify-center ${
                         isLunch
-                          ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25'
-                          : 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/25'
+                          ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                          : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
                       }`}
                     >
-                      {isLunch ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                      {isLunch ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-extrabold text-slate-900 dark:text-white text-sm">
-                          {formattedDate} • <span className="capitalize">{meal.meal_type}</span>
+                        <span className="font-bold text-sm text-slate-900 dark:text-white capitalize">
+                          {meal.meal_type}
                         </span>
-                        <span className="text-[11px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.2 rounded-md">
-                          {eaterCount} ate
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          {meal.date}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        Paid by <strong className="text-slate-800 dark:text-slate-200 font-bold">{getMemberName(meal.paid_by)}</strong>
-                        {meal.notes ? ` • "${meal.notes}"` : ''}
-                      </p>
+                      <span className="text-xs text-slate-500 dark:text-slate-400 font-medium block">
+                        Paid by <strong className="text-slate-800 dark:text-slate-200">{getMemberName(meal.paid_by)}</strong> • {meal.eater_ids?.length || 1} eaters
+                      </span>
                     </div>
                   </div>
 
-                  <div className="text-right flex items-center gap-3">
-                    <div>
-                      <div className="font-black text-slate-900 dark:text-white text-base">
-                        {formatCurrency(meal.total_amount, currency)}
-                      </div>
-                      <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
-                        {formatCurrency(perPerson, currency)}/person
-                      </div>
+                  <div className="text-right">
+                    <div className="font-black text-sm text-slate-900 dark:text-white tabular-nums">
+                      {formatCurrency(meal.total_amount, currency)}
                     </div>
-                    <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-slate-600 dark:group-hover:text-slate-200 group-hover:translate-x-0.5 transition-all" />
+                    <span className="text-[11px] font-semibold text-slate-400 block">
+                      {formatCurrency(Math.round(meal.total_amount / (meal.eater_ids?.length || 1)), currency)}/head
+                    </span>
                   </div>
                 </div>
               );

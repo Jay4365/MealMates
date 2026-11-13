@@ -136,12 +136,12 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-rose-500 bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-500/20">
               Transactions & History
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
-            <History className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
+            <History className="w-7 h-7 text-rose-500" />
             <span>Meal History Ledger</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -159,7 +159,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
           </button>
           <button
             onClick={onOpenAddMeal}
-            className="shimmer-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 text-white text-xs font-extrabold shadow-md shadow-indigo-500/25 active:scale-95 transition-all cursor-pointer"
+            className="bento-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-extrabold shadow-xs active:scale-95 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>+ Add Entry</span>
@@ -170,12 +170,12 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       {/* Top Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 1. Total Expense */}
-        <div className="glass-card hover-lift rounded-3xl p-5 relative overflow-hidden">
+        <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Filtered Expense
             </span>
-            <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/20 shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center border border-rose-500/20 shadow-xs">
               <Wallet className="w-5 h-5" />
             </div>
           </div>
@@ -190,12 +190,12 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
         </div>
 
         {/* 2. Total Meals */}
-        <div className="glass-card hover-lift rounded-3xl p-5 relative overflow-hidden">
+        <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Total Meals
             </span>
-            <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/20 shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center border border-rose-500/20 shadow-xs">
               <Utensils className="w-5 h-5" />
             </div>
           </div>
@@ -206,13 +206,13 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
             <p className="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1.5 font-bold">
               <span className="text-amber-600 dark:text-amber-400">☀️ {lunchCount} Lunch</span>
               <span>•</span>
-              <span className="text-indigo-600 dark:text-indigo-400">🌙 {dinnerCount} Dinner</span>
+              <span className="text-rose-500">🌙 {dinnerCount} Dinner</span>
             </p>
           </div>
         </div>
 
         {/* 3. Average Meal Cost */}
-        <div className="glass-card hover-lift rounded-3xl p-5 relative overflow-hidden">
+        <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Average / Meal
@@ -232,7 +232,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
         </div>
 
         {/* 4. Active Scope */}
-        <div className="glass-card hover-lift rounded-3xl p-5 relative overflow-hidden">
+        <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Active Scope
@@ -255,7 +255,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       </div>
 
       {/* Modern Filter Toolbar */}
-      <div className="glass-card rounded-3xl p-5 space-y-3.5">
+      <div className="bento-card p-5 space-y-3.5">
         {/* Search Input & Sort */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
@@ -361,7 +361,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       </div>
 
       {/* Meals Table / Card View */}
-      <div className="glass-card rounded-3xl overflow-hidden border border-slate-200/80 dark:border-white/[0.08]">
+      <div className="bento-card overflow-hidden border border-slate-200/80 dark:border-white/[0.08]">
         {filteredMeals.length === 0 ? (
           <div className="p-14 text-center">
             <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto mb-3">
@@ -434,7 +434,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                         </td>
 
                         {/* Per Person */}
-                        <td className="py-3.5 px-5 text-right whitespace-nowrap font-black text-indigo-600 dark:text-indigo-400">
+                        <td className="py-3.5 px-5 text-right whitespace-nowrap font-black text-rose-500">
                           {formatCurrency(perPerson, currency)}
                         </td>
 
@@ -522,7 +522,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                       <div>
                         Paid by: <strong className="text-slate-800 dark:text-slate-200 font-extrabold">{getMemberName(meal.paid_by)}</strong>
                       </div>
-                      <div className="text-indigo-600 dark:text-indigo-400 font-black">
+                      <div className="text-rose-500 font-black">
                         {formatCurrency(perPerson, currency)} / head ({eaterCount} ate)
                       </div>
                     </div>

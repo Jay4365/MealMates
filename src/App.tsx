@@ -48,10 +48,10 @@ const MainApp: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 text-emerald-600">
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f5f7] dark:bg-[#0a0b10] text-slate-900 dark:text-white">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+          <div className="w-10 h-10 border-4 border-slate-900 dark:border-white border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-sm font-bold tracking-tight">
             Loading MealMates...
           </span>
         </div>
@@ -59,7 +59,7 @@ const MainApp: React.FC = () => {
     );
   }
 
-  // Strict Login Gate: Without login, no one can open or access household data
+  // Strict Login Gate
   if (!user) {
     return (
       <>
@@ -70,20 +70,13 @@ const MainApp: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50/70 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 relative transition-colors duration-300">
-      {/* Animated Aurora ambient glows */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 left-1/4 w-[600px] h-[600px] bg-indigo-500/12 dark:bg-indigo-500/8 blur-[140px] rounded-full animate-aurora-1"></div>
-        <div className="absolute top-1/2 -right-32 w-[500px] h-[500px] bg-violet-500/10 dark:bg-violet-500/6 blur-[150px] rounded-full animate-aurora-2"></div>
-        <div className="absolute -bottom-32 left-1/3 w-[450px] h-[450px] bg-cyan-500/10 dark:bg-cyan-400/5 blur-[130px] rounded-full animate-aurora-3"></div>
-      </div>
-
-      {/* Top Navbar */}
+    <div className="min-h-screen flex flex-col bg-[#f5f5f7] dark:bg-[#0a0b10] text-[#1d1d1f] dark:text-[#f5f5f7] transition-colors duration-200">
+      {/* Top Bento Navbar */}
       <Navbar onOpenAddMeal={() => handleOpenAddMeal('lunch')} />
 
-      {/* Main Body */}
-      <div className="flex-1 flex max-w-7xl w-full mx-auto relative z-10">
-        {/* Desktop Sidebar */}
+      {/* Main Bento Body */}
+      <div className="flex-1 flex max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5">
+        {/* Desktop Sidebar Dock */}
         <Sidebar
           currentTab={currentTab}
           onSelectTab={setCurrentTab}
@@ -91,8 +84,8 @@ const MainApp: React.FC = () => {
           onOpenAuthModal={() => setIsAuthModalOpen(true)}
         />
 
-        {/* Page Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 md:pb-8 min-w-0">
+        {/* Bento Content Area */}
+        <main className="flex-1 md:pl-6 pb-24 md:pb-8 min-w-0">
           {currentTab === 'dashboard' && (
             <DashboardPage
               onOpenAddMeal={handleOpenAddMeal}
@@ -122,7 +115,7 @@ const MainApp: React.FC = () => {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Mobile Bottom Floating Dock */}
       <MobileNav
         currentTab={currentTab}
         onSelectTab={setCurrentTab}

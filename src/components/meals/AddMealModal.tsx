@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import type { Meal, MealType } from '../../types';
 import { useApp } from '../../context/AppContext';
 import { formatCurrency, calculateMealSplit } from '../../utils/calculations';
-import { X, Sun, Moon, Check, Calculator, Sparkles, AlertCircle } from 'lucide-react';
+import { X, Sun, Moon, Check, Sparkles, AlertCircle } from 'lucide-react';
 
 interface AddMealModalProps {
   isOpen: boolean;
@@ -33,16 +33,15 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
     return todayStr;
   };
 
-  const [date, setDate] = useState<string>(getInitialDate);
+  const [date, setDate] = useState(getInitialDate());
   const [mealType, setMealType] = useState<MealType>(initialType);
   const [amount, setAmount] = useState<string>('');
   const [paidBy, setPaidBy] = useState<string>('');
   const [eaterIds, setEaterIds] = useState<string[]>([]);
   const [notes, setNotes] = useState<string>('');
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  // Initialize or reset form
   useEffect(() => {
     if (editingMeal) {
       setDate(editingMeal.date);
@@ -56,60 +55,57 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
       setMealType(initialType);
       setAmount('');
       setNotes('');
-      // Default: all active members selected to eat
       setEaterIds(activeMembers.map((m) => m.id));
-      // Default payer: current user's member ID or first active member
-      const myMember = activeMembers.find((m) => 
-        m.name.toLowerCase() === (user?.name?.toLowerCase() || 'jay')
-      ) || activeMembers[0];
-      setPaidBy(myMember?.id || '');
-    }
-    setErrorMsg(null);
-  }, [editingMeal, initialType, activeMembers, user, isOpen, selectedMonth]);
 
-  // Real-time calculation computation
+      if (user && activeMembers.some((m) => m.id === user.id)) {
+        setPaidBy(user.id);
+      } else if (activeMembers.length > 0) {
+        setPaidBy(activeMembers[0].id);
+      }
+    }
+    setErrorMessage('');
+  }, [editingMeal, initialType, isOpen, activeMembers, user]);
+
   const numAmount = parseFloat(amount) || 0;
   const splitDetails = useMemo(() => {
     return calculateMealSplit(numAmount, eaterIds, paidBy, activeMembers);
   }, [numAmount, eaterIds, paidBy, activeMembers]);
 
-  if (!isOpen) return null;
-
-  // Toggle individual eater
-  const toggleEater = (memberId: string) => {
-    setEaterIds((prev) =>
-      prev.includes(memberId) ? prev.filter((id) => id !== memberId) : [...prev, memberId]
-    );
+  const toggleEater = (id: string) => {
+    if (eaterIds.includes(id)) {
+      if (eaterIds.length === 1) {
+        setErrorMessage('At least one person must be selected as eater.');
+        return;
+      }
+      setErrorMessage('');
+      setEaterIds(eaterIds.filter((e) => e !== id));
+    } else {
+      setErrorMessage('');
+      setEaterIds([...eaterIds, id]);
+    }
   };
 
-  // Select all or deselect all
-  const selectAll = () => {
-    setEaterIds(activeMembers.map((m) => m.id));
-  };
+  const selectAll = () => setEaterIds(activeMembers.map((m) => m.id));
   const deselectAll = () => {
-    setEaterIds([]);
+    if (activeMembers.length > 0) {
+      setEaterIds([activeMembers[0].id]);
+    }
   };
 
-  // Submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg(null);
+    setErrorMessage('');
 
-    // Validations
-    if (!date) {
-      setErrorMsg('Please select a valid date.');
-      return;
-    }
-    if (isNaN(numAmount) || numAmount <= 0) {
-      setErrorMsg('Meal amount must be greater than zero.');
-      return;
-    }
-    if (eaterIds.length === 0) {
-      setErrorMsg('Please select at least one person who ate.');
+    if (numAmount <= 0) {
+      setErrorMessage('Please enter a valid amount.');
       return;
     }
     if (!paidBy) {
-      setErrorMsg('Please select who paid for this meal.');
+      setErrorMessage('Please select who paid for the meal.');
+      return;
+    }
+    if (eaterIds.length === 0) {
+      setErrorMessage('Please select at least one person who ate.');
       return;
     }
 
@@ -122,7 +118,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
           total_amount: numAmount,
           paid_by: paidBy,
           eater_ids: eaterIds,
-          notes: notes.trim(),
+          notes: notes.trim() || undefined,
         });
       } else {
         await addMeal({
@@ -131,109 +127,102 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
           total_amount: numAmount,
           paid_by: paidBy,
           eater_ids: eaterIds,
-          notes: notes.trim(),
+          notes: notes.trim() || undefined,
         });
-      }
-      if (date) {
-        const mealMonth = date.slice(0, 7);
-        if (mealMonth && /^\d{4}-\d{2}$/.test(mealMonth)) {
-          setSelectedMonth(mealMonth);
+
+        const entryMonthKey = date.substring(0, 7);
+        if (entryMonthKey && entryMonthKey !== selectedMonth) {
+          setSelectedMonth(entryMonthKey);
         }
       }
       onClose();
     } catch (err: any) {
-      setErrorMsg(err.message || 'An error occurred while saving.');
+      setErrorMessage(err.message || 'Failed to save meal');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const payerMember = activeMembers.find((m) => m.id === paidBy);
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in-up overflow-y-auto">
-      <div className="glass-card rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden my-8 border border-white/80 dark:border-white/[0.1] animate-scale-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-[#14151f] border border-black/[0.08] dark:border-white/[0.1] rounded-[28px] shadow-2xl max-w-lg w-full max-h-[92vh] overflow-hidden flex flex-col animate-scale-in">
         {/* Modal Header */}
-        <div className="px-6 py-4.5 border-b border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between bg-white/50 dark:bg-slate-800/50">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-md ${
-              mealType === 'lunch'
-                ? 'bg-gradient-to-tr from-amber-500 to-orange-400 text-white shadow-amber-500/25'
-                : 'bg-gradient-to-tr from-indigo-600 to-violet-600 text-white shadow-indigo-500/25'
-            }`}>
-              {mealType === 'lunch' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        <div className="flex items-center justify-between p-5 border-b border-black/[0.05] dark:border-white/[0.06]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
+              <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-white">
-                {editingMeal ? 'Edit Meal Entry' : 'Add Meal Entry'}
+              <h2 className="font-black text-base text-slate-900 dark:text-white">
+                {editingMeal ? 'Edit Meal Entry' : 'Log New Meal'}
               </h2>
-              <p className="text-xs text-slate-400 dark:text-slate-500">
-                Split food expense automatically across eaters
+              <p className="text-[11px] text-slate-400 font-medium">
+                Split evenly across all roommates eating
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {errorMsg && (
-            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300 text-xs font-semibold">
+        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto space-y-4">
+          {errorMessage && (
+            <div className="p-3 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{errorMsg}</span>
+              <span>{errorMessage}</span>
             </div>
           )}
 
           {/* Date & Meal Type Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Date */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                Meal Date
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                Date
               </label>
               <input
                 type="date"
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 text-slate-900 dark:text-white text-xs font-bold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all"
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-black/[0.08] dark:border-white/[0.1] bg-black/[0.02] dark:bg-white/[0.03] text-xs font-bold outline-hidden focus:ring-2 focus:ring-rose-500"
               />
             </div>
 
-            {/* Meal Type Switcher */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Meal Type
               </label>
-              <div className="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200/60 dark:border-slate-700/60">
+              <div className="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06]">
                 <button
                   type="button"
                   onClick={() => setMealType('lunch')}
                   className={`flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     mealType === 'lunch'
-                      ? 'bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-400 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                      ? 'bg-white dark:bg-slate-800 text-amber-600 shadow-xs'
+                      : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   <Sun className="w-3.5 h-3.5" />
-                  <span>☀️ Lunch</span>
+                  <span>Lunch</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setMealType('dinner')}
                   className={`flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     mealType === 'dinner'
-                      ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                      ? 'bg-white dark:bg-slate-800 text-indigo-600 shadow-xs'
+                      : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   <Moon className="w-3.5 h-3.5" />
-                  <span>🌙 Dinner</span>
+                  <span>Dinner</span>
                 </button>
               </div>
             </div>
@@ -241,11 +230,11 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
 
           {/* Amount Paid */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-              Total Meal Amount
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              Total Amount
             </label>
-            <div className="relative rounded-2xl shadow-xs">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 font-black text-xl">
+            <div className="relative rounded-2xl">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 font-black text-xl">
                 {currency}
               </div>
               <input
@@ -256,31 +245,26 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
                 required
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-black text-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all"
+                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-black/[0.08] dark:border-white/[0.1] bg-black/[0.02] dark:bg-white/[0.03] font-black text-2xl outline-hidden focus:ring-2 focus:ring-rose-500"
               />
             </div>
           </div>
 
-          {/* Who Ate? (Checkboxes) */}
-          <div className="border border-slate-200/80 dark:border-white/[0.08] rounded-2xl p-4 bg-slate-50/60 dark:bg-slate-800/40">
+          {/* Who Ate Checkboxes */}
+          <div className="border border-black/[0.06] dark:border-white/[0.08] rounded-2xl p-4 bg-black/[0.02] dark:bg-white/[0.02]">
             <div className="flex items-center justify-between mb-3">
-              <div>
-                <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                  Who Ate?
-                </span>
-                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-black bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/20">
-                  {eaterIds.length} {eaterIds.length === 1 ? 'person' : 'persons'}
-                </span>
-              </div>
+              <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                Who Ate? ({eaterIds.length})
+              </span>
               <div className="flex items-center gap-2 text-xs font-bold">
                 <button
                   type="button"
                   onClick={selectAll}
-                  className="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                  className="text-rose-500 hover:underline cursor-pointer"
                 >
-                  Select All
+                  All
                 </button>
-                <span className="text-slate-300 dark:text-slate-600">•</span>
+                <span className="text-slate-300">•</span>
                 <button
                   type="button"
                   onClick={deselectAll}
@@ -291,8 +275,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
               </div>
             </div>
 
-            {/* Members checkboxes grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {activeMembers.map((member) => {
                 const isSelected = eaterIds.includes(member.id);
                 return (
@@ -300,17 +283,15 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
                     key={member.id}
                     type="button"
                     onClick={() => toggleEater(member.id)}
-                    className={`flex items-center gap-2.5 p-2.5 rounded-xl border text-left text-xs font-bold transition-all cursor-pointer ${
+                    className={`flex items-center gap-2 p-2.5 rounded-xl border text-left text-xs font-bold transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-900 dark:text-indigo-200 shadow-xs'
-                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300'
+                        ? 'bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-300'
+                        : 'bg-white dark:bg-slate-900 border-black/[0.06] dark:border-white/[0.06] text-slate-600 dark:text-slate-400'
                     }`}
                   >
                     <div
-                      className={`w-4 h-4 rounded-md flex items-center justify-center transition-colors ${
-                        isSelected
-                          ? 'bg-indigo-600 text-white'
-                          : 'border border-slate-300 dark:border-slate-600'
+                      className={`w-4 h-4 rounded-md flex items-center justify-center ${
+                        isSelected ? 'bg-rose-500 text-white' : 'border border-slate-300 dark:border-slate-600'
                       }`}
                     >
                       {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
@@ -321,97 +302,64 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
               })}
             </div>
 
-            {/* Real-time Per Person calculation preview */}
-            <div className="mt-3.5 pt-3 border-t border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
-                <Calculator className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                <span>
-                  {numAmount > 0 && eaterIds.length > 0
-                    ? `${formatCurrency(numAmount, currency)} ÷ ${eaterIds.length} =`
-                    : 'Cost per head:'}
-                </span>
-              </div>
-              <div className="font-black text-sm text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-xl">
-                {formatCurrency(splitDetails.perPersonCost, currency)}
-                <span className="text-[11px] font-normal text-slate-500 dark:text-slate-400"> / head</span>
-              </div>
+            {/* Split Preview */}
+            <div className="mt-3.5 pt-3 border-t border-black/[0.05] dark:border-white/[0.06] flex items-center justify-between text-xs">
+              <span className="text-slate-500 font-medium">Cost per person:</span>
+              <span className="font-black text-sm text-slate-900 dark:text-white tabular-nums">
+                {formatCurrency(splitDetails.perPersonCost, currency)} / head
+              </span>
             </div>
           </div>
 
           {/* Paid By */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-              Who Paid for this?
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              Who Paid?
             </label>
             <select
               value={paidBy}
               onChange={(e) => setPaidBy(e.target.value)}
               required
-              className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all cursor-pointer"
+              className="w-full px-3.5 py-2.5 rounded-2xl border border-black/[0.08] dark:border-white/[0.1] bg-black/[0.02] dark:bg-white/[0.03] text-xs font-bold outline-hidden focus:ring-2 focus:ring-rose-500 cursor-pointer"
             >
-              <option value="" disabled>
-                Select who paid the bill
-              </option>
+              <option value="" disabled>Select payer</option>
               {activeMembers.map((m) => (
-                <option key={m.id} value={m.id} className="dark:bg-slate-800">
+                <option key={m.id} value={m.id} className="dark:bg-slate-900">
                   {m.name} {m.name.toLowerCase() === user?.name?.toLowerCase() ? '(You)' : ''}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Live Impact Preview */}
-          {numAmount > 0 && eaterIds.length > 0 && paidBy && (
-            <div className="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-xs space-y-1.5">
-              <div className="flex items-center gap-1.5 font-extrabold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>Instant Split Impact</span>
-              </div>
-              <p className="text-slate-600 dark:text-slate-400">
-                <strong className="text-slate-900 dark:text-white">{payerMember?.name}</strong> paid {formatCurrency(numAmount, currency)}.
-                {splitDetails.balances[paidBy] > 0 ? (
-                  <span className="text-indigo-600 dark:text-indigo-400 font-bold ml-1">
-                    Will receive {formatCurrency(splitDetails.balances[paidBy], currency)} back.
-                  </span>
-                ) : (
-                  <span className="text-slate-600 dark:text-slate-400 ml-1">Own share is {formatCurrency(splitDetails.perPersonCost, currency)}.</span>
-                )}
-              </p>
-              <p className="text-slate-400 dark:text-slate-500 text-[11px]">
-                Other eaters ({eaterIds.filter(id => id !== paidBy).map(id => activeMembers.find(m => m.id === id)?.name).join(', ')}) owe {formatCurrency(splitDetails.perPersonCost, currency)} each.
-              </p>
-            </div>
-          )}
-
-          {/* Notes (Optional) */}
+          {/* Notes */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-              Notes / Description (Optional)
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              Notes (Optional)
             </label>
             <input
               type="text"
-              placeholder="e.g. Swiggy order, Paneer Handi, Grocery rotis..."
+              placeholder="e.g. Swiggy, Groceries, Paneer..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all"
+              className="w-full px-3.5 py-2.5 rounded-2xl border border-black/[0.08] dark:border-white/[0.1] bg-black/[0.02] dark:bg-white/[0.03] text-xs outline-hidden focus:ring-2 focus:ring-rose-500"
             />
           </div>
 
-          {/* Action Buttons */}
-          <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-200/60 dark:border-white/[0.06]">
+          {/* Actions */}
+          <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-black/[0.05] dark:border-white/[0.06]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              className="px-4 py-2.5 rounded-2xl border border-black/[0.1] dark:border-white/[0.1] text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="shimmer-btn px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 active:scale-95 text-white font-extrabold text-xs shadow-md shadow-indigo-500/30 disabled:opacity-50 transition-all cursor-pointer"
+              className="bento-btn px-6 py-2.5 rounded-2xl bg-rose-500 hover:bg-rose-600 active:scale-95 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
             >
-              {isSubmitting ? 'Saving...' : editingMeal ? 'Update Meal' : 'Save Meal Entry'}
+              {isSubmitting ? 'Saving...' : editingMeal ? 'Update' : 'Save Meal'}
             </button>
           </div>
         </form>
