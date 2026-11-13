@@ -21,7 +21,7 @@ export const StatCards: React.FC<StatCardsProps> = ({ selectedMonth }) => {
   const isCurrentMonth = selectedMonth === currentMonthKey;
 
   // Today's Expense
-  const todayStr = today.toISOString().split('T')[0];
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const todayMeals = meals.filter((m) => m.date === todayStr);
   const todayExpense = todayMeals.reduce((acc, m) => acc + (Number(m.total_amount) || 0), 0);
 

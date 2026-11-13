@@ -47,10 +47,13 @@ export const SettlementModal: React.FC<SettlementModalProps> = ({ isOpen, onClos
     try {
       const today = new Date();
       const currentMonthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-      // When settling for a specific month, record the date in that month (e.g. 2026-09-30)
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      const [selY, selM] = selectedMonth.split('-').map(Number);
+      const lastDay = new Date(selY, selM, 0).getDate();
+      // When settling for a specific past month, record the date as the last day of that month
       const settlementDate = scope === 'month' && selectedMonth !== currentMonthKey
-        ? `${selectedMonth}-30`
-        : today.toISOString().split('T')[0];
+        ? `${selectedMonth}-${String(lastDay).padStart(2, '0')}`
+        : todayStr;
 
       await recordSettlement(
         fromId,

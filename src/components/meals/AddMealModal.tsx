@@ -17,15 +17,20 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
   initialType = 'lunch',
   editingMeal = null,
 }) => {
-  const { activeMembers, currency, addMeal, updateMeal, user, selectedMonth } = useApp();
+  const { activeMembers, currency, addMeal, updateMeal, user, selectedMonth, setSelectedMonth } = useApp();
 
   const getInitialDate = () => {
     const today = new Date();
-    const currentMonthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    const currentYear = today.getFullYear();
+    const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
+    const currentDay = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${currentYear}-${currentMonth}-${currentDay}`;
+    const currentMonthKey = `${currentYear}-${currentMonth}`;
+
     if (selectedMonth && selectedMonth !== currentMonthKey) {
       return `${selectedMonth}-01`;
     }
-    return today.toISOString().split('T')[0];
+    return todayStr;
   };
 
   const [date, setDate] = useState<string>(getInitialDate);
@@ -128,6 +133,12 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
           eater_ids: eaterIds,
           notes: notes.trim(),
         });
+      }
+      if (date) {
+        const mealMonth = date.slice(0, 7);
+        if (mealMonth && /^\d{4}-\d{2}$/.test(mealMonth)) {
+          setSelectedMonth(mealMonth);
+        }
       }
       onClose();
     } catch (err: any) {

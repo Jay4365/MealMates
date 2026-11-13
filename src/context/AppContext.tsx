@@ -4,6 +4,12 @@ import { storageService } from '../services/storageService';
 import { calculateMemberBalances } from '../utils/calculations';
 import { getSupabaseConfig, supabase } from '../lib/supabase';
 
+// Helper to get current month key in YYYY-MM format
+const getCurrentMonthKey = (): string => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+};
+
 interface Toast {
   id: string;
   message: string;
@@ -69,30 +75,95 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [loading, setLoading] = useState(true);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  // Selected Month State (only September and October 2026 allowed)
+  // Selected Month State: defaults to the current running month automatically
   const [selectedMonth, setSelectedMonthState] = useState<string>(() => {
-    const saved = localStorage.getItem('mealmates_selected_month');
-    if (saved === '2026-09' || saved === '2026-10') return saved;
-    return '2026-10';
+    const currentMonth = getCurrentMonthKey();
+    try {
+      const saved = localStorage.getItem('mealmates_selected_month');
+      const lastActive = localStorage.getItem('mealmates_last_active_month');
+      // If user chose a month in the current running period, keep it;
+      // If a new month has arrived or no selection was made, default to currentMonth automatically
+      if (saved && /^\d{4}-\d{2}$/.test(saved) && lastActive === currentMonth) {
+        return saved;
+      }
+      localStorage.setItem('mealmates_selected_month', currentMonth);
+      localStorage.setItem('mealmates_last_active_month', currentMonth);
+    } catch {
+      // ignore
+    }
+    return currentMonth;
   });
 
   const setSelectedMonth = useCallback((month: string) => {
-    if (month !== '2026-09' && month !== '2026-10') return;
+    if (!month || !/^\d{4}-\d{2}$/.test(month)) return;
     setSelectedMonthState(month);
     try {
       localStorage.setItem('mealmates_selected_month', month);
+      localStorage.setItem('mealmates_last_active_month', getCurrentMonthKey());
     } catch {
       // ignore
     }
   }, []);
 
+  // Automatically update to the new month whenever calendar month rolls over
+  useEffect(() => {
+    const currentMonth = getCurrentMonthKey();
+    const lastActive = localStorage.getItem('mealmates_last_active_month');
+    if (lastActive !== currentMonth) {
+      setSelectedMonth(currentMonth);
+    }
+  }, [setSelectedMonth]);
+
   const monthOptions = useMemo(() => {
-    // Strictly keep only September 2026 and October 2026 as required
-    return [
-      { key: '2026-10', label: 'October 2026' },
-      { key: '2026-09', label: 'September 2026' },
-    ];
-  }, []);
+    const currentMonth = getCurrentMonthKey();
+    const monthsSet = new Set<string>();
+
+    // 1. Always include the current running month
+    monthsSet.add(currentMonth);
+
+    // 2. Include selected month if set
+    if (selectedMonth && /^\d{4}-\d{2}$/.test(selectedMonth)) {
+      monthsSet.add(selectedMonth);
+    }
+
+    // 3. Include all months present in recorded meals
+    meals.forEach((m) => {
+      if (m.date && m.date.length >= 7) {
+        const key = m.date.slice(0, 7);
+        if (/^\d{4}-\d{2}$/.test(key)) {
+          monthsSet.add(key);
+        }
+      }
+    });
+
+    // 4. Include all months present in recorded settlements
+    settlements.forEach((s) => {
+      if (s.date && s.date.length >= 7) {
+        const key = s.date.slice(0, 7);
+        if (/^\d{4}-\d{2}$/.test(key)) {
+          monthsSet.add(key);
+        }
+      }
+    });
+
+    // 5. Always include previous 2-3 months as convenience (e.g. October 2026, September 2026)
+    const [currY, currM] = currentMonth.split('-').map(Number);
+    for (let i = 1; i <= 3; i++) {
+      const prevDate = new Date(currY, currM - 1 - i, 1);
+      const prevKey = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`;
+      monthsSet.add(prevKey);
+    }
+
+    // Sort descending (latest month first)
+    const sorted = Array.from(monthsSet).sort((a, b) => b.localeCompare(a));
+
+    return sorted.map((key) => {
+      const [y, m] = key.split('-').map(Number);
+      const date = new Date(y, m - 1, 1);
+      const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      return { key, label };
+    });
+  }, [meals, settlements, selectedMonth]);
 
   const selectedMonthLabel = useMemo(() => {
     const opt = monthOptions.find((o: { key: string; label: string }) => o.key === selectedMonth);
@@ -209,6 +280,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     try {
       const created = await storageService.addMeal(mealData);
       showToast('Meal added successfully.', 'success');
+      // Automatically switch view to the added meal's month so it immediately displays
+      if (mealData.date) {
+        const mealMonth = mealData.date.slice(0, 7);
+        if (mealMonth && /^\d{4}-\d{2}$/.test(mealMonth)) {
+          setSelectedMonth(mealMonth);
+        }
+      }
       return created;
     } catch (e: any) {
       showToast(e.message || 'Failed to add meal', 'error');
@@ -220,6 +298,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     try {
       const updated = await storageService.updateMeal(id, mealData);
       showToast('Meal updated successfully.', 'success');
+      if (mealData.date) {
+        const mealMonth = mealData.date.slice(0, 7);
+        if (mealMonth && /^\d{4}-\d{2}$/.test(mealMonth)) {
+          setSelectedMonth(mealMonth);
+        }
+      }
       return updated;
     } catch (e: any) {
       showToast(e.message || 'Failed to update meal', 'error');

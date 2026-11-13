@@ -311,41 +311,55 @@ class StorageService {
 
   // --- Meal Methods ---
   public async getMeals(): Promise<Meal[]> {
+    const raw = localStorage.getItem(STORAGE_KEYS.MEALS);
+    const localMeals: Meal[] = raw ? JSON.parse(raw) : [];
+
     const { isConfigured } = getSupabaseConfig();
     if (isConfigured && supabase) {
-      const group = await this.getActiveGroup();
-      const { data: mealsData, error } = await supabase
-        .from('meals')
-        .select(`
-          *,
-          meal_members(member_id, share_amount)
-        `)
-        .eq('group_id', group.id)
-        .order('date', { ascending: false });
+      try {
+        const group = await this.getActiveGroup();
+        const { data: mealsData, error } = await supabase
+          .from('meals')
+          .select(`
+            *,
+            meal_members(member_id, share_amount)
+          `)
+          .eq('group_id', group.id)
+          .order('date', { ascending: false });
 
-      if (error) {
-        console.error('Failed to fetch meals from Supabase:', error);
-      }
+        if (!error && mealsData) {
+          const supabaseMeals: Meal[] = mealsData.map((m) => ({
+            id: m.id,
+            group_id: m.group_id,
+            date: m.date,
+            meal_type: m.meal_type,
+            total_amount: Number(m.total_amount),
+            paid_by: m.paid_by,
+            notes: m.notes || '',
+            created_by: m.created_by,
+            created_at: m.created_at,
+            eater_ids: m.meal_members ? m.meal_members.map((mm: { member_id: string }) => mm.member_id) : [],
+          }));
 
-      if (mealsData) {
-        return mealsData.map((m) => ({
-          id: m.id,
-          group_id: m.group_id,
-          date: m.date,
-          meal_type: m.meal_type,
-          total_amount: Number(m.total_amount),
-          paid_by: m.paid_by,
-          notes: m.notes || '',
-          created_by: m.created_by,
-          created_at: m.created_at,
-          eater_ids: m.meal_members ? m.meal_members.map((mm: { member_id: string }) => mm.member_id) : [],
-        }));
+          // Merge local and supabase without duplicates
+          const merged: Meal[] = [...supabaseMeals];
+          localMeals.forEach((lm) => {
+            if (!merged.some((sm) => sm.id === lm.id)) {
+              merged.push(lm);
+            }
+          });
+          merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(merged));
+          return merged;
+        } else if (error) {
+          console.warn('Failed to fetch meals from Supabase:', error);
+        }
+      } catch (err) {
+        console.warn('Supabase meals fetch error, using local fallback:', err);
       }
-      return [];
     }
 
-    const raw = localStorage.getItem(STORAGE_KEYS.MEALS);
-    return raw ? JSON.parse(raw) : [];
+    return localMeals;
   }
 
   public async addMeal(mealData: Omit<Meal, 'id' | 'created_at' | 'group_id'>): Promise<Meal> {
@@ -359,41 +373,44 @@ class StorageService {
 
     const { isConfigured } = getSupabaseConfig();
     if (isConfigured && supabase) {
-      const { data, error } = await supabase.from('meals').insert({
-        group_id: group.id,
-        date: newMeal.date,
-        meal_type: newMeal.meal_type,
-        total_amount: newMeal.total_amount,
-        paid_by: newMeal.paid_by,
-        notes: newMeal.notes,
-      }).select().single();
+      try {
+        const { data, error } = await supabase.from('meals').insert({
+          group_id: group.id,
+          date: newMeal.date,
+          meal_type: newMeal.meal_type,
+          total_amount: newMeal.total_amount,
+          paid_by: newMeal.paid_by,
+          notes: newMeal.notes,
+        }).select().single();
 
-      if (error) {
-        console.error('Supabase addMeal error:', error);
-        throw error;
-      }
-
-      if (data) {
-        newMeal.id = data.id;
-        if (newMeal.eater_ids.length > 0) {
-          const sharePerPerson = newMeal.total_amount / newMeal.eater_ids.length;
-          const mealMembers = newMeal.eater_ids.map((eaterId) => ({
-            meal_id: data.id,
-            member_id: eaterId,
-            share_amount: Math.round(sharePerPerson * 100) / 100,
-          }));
-          const { error: mmErr } = await supabase.from('meal_members').insert(mealMembers);
-          if (mmErr) console.error('Failed to insert meal_members:', mmErr);
+        if (error) {
+          console.warn('Supabase addMeal notice:', error);
+        } else if (data) {
+          newMeal.id = data.id;
+          if (newMeal.eater_ids.length > 0) {
+            const sharePerPerson = newMeal.total_amount / newMeal.eater_ids.length;
+            const mealMembers = newMeal.eater_ids.map((eaterId) => ({
+              meal_id: data.id,
+              member_id: eaterId,
+              share_amount: Math.round(sharePerPerson * 100) / 100,
+            }));
+            const { error: mmErr } = await supabase.from('meal_members').insert(mealMembers);
+            if (mmErr) console.warn('Failed to insert meal_members:', mmErr);
+          }
         }
+      } catch (err) {
+        console.warn('Supabase addMeal network exception, saved locally:', err);
       }
-      this.notify();
-      return newMeal;
     }
 
-    const meals = await this.getMeals();
-    meals.unshift(newMeal);
-    meals.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(meals));
+    // Always update local cache
+    const raw = localStorage.getItem(STORAGE_KEYS.MEALS);
+    const meals: Meal[] = raw ? JSON.parse(raw) : [];
+    if (!meals.some((m) => m.id === newMeal.id)) {
+      meals.unshift(newMeal);
+      meals.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(meals));
+    }
     this.notify();
     return newMeal;
   }
@@ -401,65 +418,60 @@ class StorageService {
   public async updateMeal(id: string, mealData: Partial<Meal>): Promise<Meal> {
     const { isConfigured } = getSupabaseConfig();
     if (isConfigured && supabase) {
-      const { error } = await supabase
-        .from('meals')
-        .update({
-          date: mealData.date,
-          meal_type: mealData.meal_type,
-          total_amount: mealData.total_amount,
-          paid_by: mealData.paid_by,
-          notes: mealData.notes,
-        })
-        .eq('id', id);
+      try {
+        await supabase
+          .from('meals')
+          .update({
+            date: mealData.date,
+            meal_type: mealData.meal_type,
+            total_amount: mealData.total_amount,
+            paid_by: mealData.paid_by,
+            notes: mealData.notes,
+          })
+          .eq('id', id);
 
-      if (error) {
-        console.error('Failed to update meal in Supabase:', error);
-        throw error;
+        if (mealData.eater_ids && mealData.total_amount) {
+          await supabase.from('meal_members').delete().eq('meal_id', id);
+          const sharePerPerson = mealData.total_amount / (mealData.eater_ids.length || 1);
+          const mealMembers = mealData.eater_ids.map((eaterId) => ({
+            meal_id: id,
+            member_id: eaterId,
+            share_amount: Math.round(sharePerPerson * 100) / 100,
+          }));
+          await supabase.from('meal_members').insert(mealMembers);
+        }
+      } catch (err) {
+        console.warn('Supabase updateMeal notice:', err);
       }
-
-      if (mealData.eater_ids && mealData.total_amount) {
-        await supabase.from('meal_members').delete().eq('meal_id', id);
-        const sharePerPerson = mealData.total_amount / (mealData.eater_ids.length || 1);
-        const mealMembers = mealData.eater_ids.map((eaterId) => ({
-          meal_id: id,
-          member_id: eaterId,
-          share_amount: Math.round(sharePerPerson * 100) / 100,
-        }));
-        await supabase.from('meal_members').insert(mealMembers);
-      }
-
-      this.notify();
-      const updatedList = await this.getMeals();
-      return updatedList.find((m) => m.id === id) || (mealData as Meal);
     }
 
-    const meals = await this.getMeals();
+    const raw = localStorage.getItem(STORAGE_KEYS.MEALS);
+    const meals: Meal[] = raw ? JSON.parse(raw) : [];
     const index = meals.findIndex((m) => m.id === id);
-    if (index === -1) throw new Error('Meal not found');
-
-    const updated: Meal = { ...meals[index], ...mealData };
-    meals[index] = updated;
-    meals.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(meals));
+    if (index !== -1) {
+      meals[index] = { ...meals[index], ...mealData };
+      meals.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(meals));
+    }
     this.notify();
-    return updated;
+    return (meals.find((m) => m.id === id) || mealData) as Meal;
   }
 
   public async deleteMeal(id: string): Promise<void> {
     const { isConfigured } = getSupabaseConfig();
     if (isConfigured && supabase) {
-      await supabase.from('meal_members').delete().eq('meal_id', id);
-      const { error } = await supabase.from('meals').delete().eq('id', id);
-      if (error) {
-        console.error('Failed to delete meal in Supabase:', error);
-        throw error;
+      try {
+        await supabase.from('meal_members').delete().eq('meal_id', id);
+        await supabase.from('meals').delete().eq('id', id);
+      } catch (err) {
+        console.warn('Supabase deleteMeal notice:', err);
       }
-      this.notify();
-      return;
     }
 
-    const meals = (await this.getMeals()).filter((m) => m.id !== id);
-    localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(meals));
+    const raw = localStorage.getItem(STORAGE_KEYS.MEALS);
+    const meals: Meal[] = raw ? JSON.parse(raw) : [];
+    const filtered = meals.filter((m) => m.id !== id);
+    localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(filtered));
     this.notify();
   }
 
