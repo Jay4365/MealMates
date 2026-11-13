@@ -112,12 +112,12 @@ export const SettingsPage: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-semibold mb-2">
             <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '6s' }} />
             <span>Preferences & Cloud Architecture</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/25">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 via-violet-500 to-fuchsia-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/25">
               <Settings className="w-5 h-5" />
             </div>
             <span>App & Household Settings</span>
@@ -132,7 +132,7 @@ export const SettingsPage: React.FC = () => {
       <div className="glass-card rounded-2xl p-6 hover-lift relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-emerald-500/10 via-cyan-500/5 to-transparent rounded-full blur-2xl pointer-events-none" />
         <div className="flex items-center gap-4 relative z-10">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-400 text-white font-black text-xl flex items-center justify-center shadow-xl shadow-emerald-500/30 ring-2 ring-white/50 dark:ring-slate-700/50">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 via-violet-500 to-fuchsia-400 text-white font-black text-xl flex items-center justify-center shadow-xl shadow-indigo-500/30 ring-2 ring-white/50 dark:ring-slate-700/50">
             {user?.name?.charAt(0).toUpperCase() || 'U'}
           </div>
           <div>
@@ -140,7 +140,7 @@ export const SettingsPage: React.FC = () => {
               <h3 className="font-extrabold text-slate-900 dark:text-white text-lg">
                 {user?.name || 'Roommate'}
               </h3>
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300">
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-700 dark:text-indigo-300">
                 <ShieldCheck className="w-3 h-3" />
                 Active Session
               </span>
@@ -163,7 +163,7 @@ export const SettingsPage: React.FC = () => {
       {/* 1. Group / Household Settings */}
       <div className="glass-card rounded-2xl p-6 hover-lift space-y-5">
         <div className="flex items-center gap-3 pb-3 border-b border-slate-200/60 dark:border-slate-800/80">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500/20 to-teal-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/20">
             <Building className="w-5 h-5" />
           </div>
           <div>
@@ -188,7 +188,7 @@ export const SettingsPage: React.FC = () => {
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
                 placeholder="e.g. Our Room, Flat 402, 5 Roommates"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-sm outline-hidden focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-sm outline-hidden focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
               />
             </div>
 
@@ -199,7 +199,7 @@ export const SettingsPage: React.FC = () => {
               <select
                 value={currencySymbol}
                 onChange={(e) => setCurrencySymbol(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-sm outline-hidden focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-sm outline-hidden focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
               >
                 <option value="₹">₹ (Indian Rupee - INR)</option>
                 <option value="$">$ (US Dollar - USD)</option>
@@ -216,7 +216,7 @@ export const SettingsPage: React.FC = () => {
             <button
               type="submit"
               disabled={isSavingGroup}
-              className="shimmer-btn px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white font-bold text-xs shadow-lg shadow-emerald-500/20 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-95"
+              className="shimmer-btn px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-500 text-white font-bold text-xs shadow-lg shadow-indigo-500/20 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-95"
             >
               {isSavingGroup ? 'Saving...' : 'Save Household Info'}
             </button>
@@ -273,7 +273,7 @@ export const SettingsPage: React.FC = () => {
                   Supabase PostgreSQL & Auth
                 </h3>
                 {isSupabaseConnected ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-700 dark:text-indigo-300">
                     <CheckCircle2 className="w-3 h-3" />
                     Connected
                   </span>
@@ -301,11 +301,11 @@ export const SettingsPage: React.FC = () => {
 
         <div className="p-4 rounded-xl bg-slate-500/5 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 text-xs text-slate-600 dark:text-slate-400 space-y-1">
           <p className="font-semibold text-slate-900 dark:text-slate-200 flex items-center gap-1.5">
-            <FileCode2 className="w-4 h-4 text-emerald-500" />
+            <FileCode2 className="w-4 h-4 text-indigo-500" />
             Supabase Schema Ready:
           </p>
           <p>
-            Pre-configured schema available at <code className="bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[11px] text-emerald-600 dark:text-emerald-400 font-mono">supabase/schema.sql</code> with all tables, constraints, relations, and RLS policies.
+            Pre-configured schema available at <code className="bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[11px] text-indigo-600 dark:text-indigo-400 font-mono">supabase/schema.sql</code> with all tables, constraints, relations, and RLS policies.
           </p>
         </div>
 
@@ -319,7 +319,7 @@ export const SettingsPage: React.FC = () => {
               placeholder="https://your-project.supabase.co"
               value={supabaseUrl}
               onChange={(e) => setSupabaseUrl(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-xs outline-hidden focus:ring-2 focus:ring-emerald-500 font-mono"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-xs outline-hidden focus:ring-2 focus:ring-indigo-500 font-mono"
             />
           </div>
 
@@ -332,7 +332,7 @@ export const SettingsPage: React.FC = () => {
               placeholder="eyJhbGciOi..."
               value={supabaseKey}
               onChange={(e) => setSupabaseKey(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-xs outline-hidden focus:ring-2 focus:ring-emerald-500 font-mono"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-xs outline-hidden focus:ring-2 focus:ring-indigo-500 font-mono"
             />
           </div>
 
@@ -340,7 +340,7 @@ export const SettingsPage: React.FC = () => {
             <button
               type="submit"
               disabled={isSavingSupabase}
-              className="px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-emerald-600 dark:hover:bg-emerald-400 font-bold text-xs shadow-md transition-all hover:scale-[1.02] active:scale-95"
+              className="px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-indigo-600 dark:hover:bg-indigo-400 font-bold text-xs shadow-md transition-all hover:scale-[1.02] active:scale-95"
             >
               {isSavingSupabase ? 'Connecting...' : 'Connect to Supabase'}
             </button>
@@ -369,15 +369,15 @@ export const SettingsPage: React.FC = () => {
             onClick={handleExportFullJSON}
             className="flex-1 flex items-center justify-center gap-2 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80 hover:bg-slate-100/70 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 transition-all cursor-pointer active:scale-95"
           >
-            <Download className="w-4 h-4 text-emerald-500" />
+            <Download className="w-4 h-4 text-indigo-500" />
             <span>Export Full JSON Backup</span>
           </button>
 
           <button
             onClick={handleResetData}
-            className="flex-1 flex items-center justify-center gap-2 p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-xs font-bold text-emerald-700 dark:text-emerald-300 transition-all cursor-pointer active:scale-95"
+            className="flex-1 flex items-center justify-center gap-2 p-3.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-xs font-bold text-indigo-700 dark:text-indigo-300 transition-all cursor-pointer active:scale-95"
           >
-            <RotateCcw className="w-4 h-4 text-emerald-500" />
+            <RotateCcw className="w-4 h-4 text-indigo-500" />
             <span>Sync Fresh from Cloud</span>
           </button>
         </div>

@@ -136,12 +136,12 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
               Transactions & History
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
-            <History className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+            <History className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
             <span>Meal History Ledger</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -159,7 +159,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
           </button>
           <button
             onClick={onOpenAddMeal}
-            className="shimmer-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 text-white text-xs font-extrabold shadow-md shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer"
+            className="shimmer-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 text-white text-xs font-extrabold shadow-md shadow-indigo-500/25 active:scale-95 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>+ Add Entry</span>
@@ -175,7 +175,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Filtered Expense
             </span>
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20 shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/20 shadow-xs">
               <Wallet className="w-5 h-5" />
             </div>
           </div>
@@ -265,7 +265,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
               placeholder="Search by notes, payer name, or date (e.g. Biryani, Swiggy)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/60 text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-hidden focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+              className="w-full pl-9 pr-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/60 text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-hidden focus:ring-4 focus:ring-indigo-500/20 focus:border-emerald-500 transition-all font-medium"
             />
           </div>
           <button
@@ -434,7 +434,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                         </td>
 
                         {/* Per Person */}
-                        <td className="py-3.5 px-5 text-right whitespace-nowrap font-black text-emerald-600 dark:text-emerald-400">
+                        <td className="py-3.5 px-5 text-right whitespace-nowrap font-black text-indigo-600 dark:text-indigo-400">
                           {formatCurrency(perPerson, currency)}
                         </td>
 
@@ -522,7 +522,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                       <div>
                         Paid by: <strong className="text-slate-800 dark:text-slate-200 font-extrabold">{getMemberName(meal.paid_by)}</strong>
                       </div>
-                      <div className="text-emerald-600 dark:text-emerald-400 font-black">
+                      <div className="text-indigo-600 dark:text-indigo-400 font-black">
                         {formatCurrency(perPerson, currency)} / head ({eaterCount} ate)
                       </div>
                     </div>

@@ -50,12 +50,12 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 dark:bg-indigo-500/15 border border-indigo-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
               <Sparkles className="w-3 h-3" /> Household Overview
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            Welcome Back, <span className="bg-gradient-to-r from-emerald-600 to-teal-500 dark:from-emerald-400 dark:to-teal-300 bg-clip-text text-transparent">{displayName}</span>! 👋
+            Welcome Back, <span className="gradient-text">{displayName}</span>! 👋
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             Real-time meal ledger, per-person calculations, and easy roommate settlements.
@@ -64,8 +64,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
         {/* Dynamic Month Selector */}
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/90 dark:bg-slate-850/90 border border-slate-200/80 dark:border-white/[0.08] shadow-xs hover:border-emerald-500/40 transition-colors backdrop-blur-md">
-            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+          <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/90 dark:bg-slate-850/90 border border-slate-200/80 dark:border-white/[0.08] shadow-xs hover:border-indigo-500/40 transition-colors backdrop-blur-md">
+            <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
               <Calendar className="w-4 h-4" />
             </div>
             <select
@@ -87,8 +87,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       <StatCards selectedMonth={selectedMonth} />
 
       {/* Personal Statement High-Impact Banner */}
-      <div className="p-5 rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white shadow-xl shadow-emerald-600/15 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+      <div className="p-5 rounded-3xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-white shadow-xl shadow-indigo-600/20 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
         <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
+        <div className="absolute top-0 left-1/3 w-32 h-32 bg-fuchsia-400/20 rounded-full blur-3xl animate-aurora-1 pointer-events-none"></div>
         <div className="flex items-center gap-4 relative z-10">
           <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0 shadow-inner">
             <Utensils className="w-6 h-6" />
@@ -100,14 +101,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 {selectedMonthLabel}
               </span>
             </h4>
-            <p className="text-xs text-emerald-100 mt-1 max-w-xl">
+            <p className="text-xs text-indigo-100 mt-1 max-w-xl">
               View your exact food share, total bills paid, and simplified settlement instructions with your roommates.
             </p>
           </div>
         </div>
         <button
           onClick={() => onNavigateTab('monthly-report')}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white text-emerald-800 font-extrabold text-xs shadow-md hover:bg-emerald-50 active:scale-95 transition-all shrink-0 self-start sm:self-auto cursor-pointer relative z-10"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white text-indigo-700 font-extrabold text-xs shadow-md hover:bg-indigo-50 active:scale-95 transition-all shrink-0 self-start sm:self-auto cursor-pointer relative z-10"
         >
           <span>Open My Statement</span>
           <ArrowRight className="w-4 h-4" />
@@ -143,7 +144,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           </div>
           <button
             onClick={() => onNavigateTab('history')}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-emerald-700 transition-colors cursor-pointer"
           >
             <span>View All</span>
             <ChevronRight className="w-4 h-4" />
@@ -163,7 +164,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </p>
             <button
               onClick={() => onOpenAddMeal()}
-              className="mt-4 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold shadow-md shadow-emerald-500/20 hover:from-emerald-500 hover:to-teal-500 transition-all cursor-pointer active:scale-95"
+              className="mt-4 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-bold shadow-md shadow-indigo-500/20 hover:from-indigo-500 hover:to-violet-500 transition-all cursor-pointer active:scale-95"
             >
               + Add Meal for {selectedMonthLabel}
             </button>
@@ -216,7 +217,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                       <div className="font-black text-slate-900 dark:text-white text-base">
                         {formatCurrency(meal.total_amount, currency)}
                       </div>
-                      <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+                      <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
                         {formatCurrency(perPerson, currency)}/person
                       </div>
                     </div>

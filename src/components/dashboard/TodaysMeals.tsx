@@ -47,7 +47,7 @@ export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewM
         <div>
           <h3 className="font-extrabold text-slate-900 dark:text-white text-lg flex items-center gap-2.5">
             <span>{isCurrentMonth ? "Today's Meals" : "Meals Overview"}</span>
-            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+            <span className="text-xs font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-500/10 dark:bg-indigo-500/15 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
               {isCurrentMonth ? formattedDate : selectedMonthLabel}
             </span>
           </h3>
@@ -57,7 +57,7 @@ export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewM
         </div>
         <button
           onClick={() => onOpenAddMeal()}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 px-3 py-1.5 rounded-xl transition-all cursor-pointer border border-emerald-500/20"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 px-3 py-1.5 rounded-xl transition-all cursor-pointer border border-indigo-500/20"
         >
           <Plus className="w-3.5 h-3.5 stroke-[3]" />
           <span>+ Add Entry</span>

@@ -113,12 +113,12 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 no-print">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
               Financial Breakdown
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
-            <FileBarChart2 className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+            <FileBarChart2 className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
             <span>Monthly Report & Statement</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -129,7 +129,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Month Selector */}
           <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-white/[0.08] shadow-xs backdrop-blur-md">
-            <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
@@ -155,7 +155,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
           {/* Download PDF / Print */}
           <button
             onClick={handlePrintPDF}
-            className="shimmer-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-extrabold shadow-sm shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
+            className="shimmer-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-extrabold shadow-sm shadow-indigo-600/20 active:scale-95 transition-all cursor-pointer"
           >
             <Printer className="w-4 h-4" />
             <span>Print / PDF</span>
@@ -169,7 +169,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
           onClick={() => setViewMode('personal')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             viewMode === 'personal'
-              ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-extrabold'
+              ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs font-extrabold'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -181,7 +181,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
           onClick={() => setViewMode('all')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             viewMode === 'all'
-              ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-extrabold'
+              ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs font-extrabold'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -211,7 +211,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
                     onClick={() => setSelectedMemberId(m.id)}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                       isSelected
-                        ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
+                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
                         : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
                     }`}
                   >
@@ -244,7 +244,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
                     <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                       {selectedMember?.name}'s Monthly Statement
                     </h2>
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-indigo-700 dark:text-indigo-400">
                       {stats.month_str}
                     </span>
                   </div>
@@ -262,7 +262,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
                 <div
                   className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xl font-black ${
                     isPos
-                      ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-2 border-emerald-300 dark:border-emerald-700'
+                      ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-2 border-emerald-300 dark:border-emerald-700'
                       : isNeg
                       ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border-2 border-rose-300 dark:border-rose-700'
                       : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
@@ -274,7 +274,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
                 </div>
                 <div className="text-xs font-bold mt-1">
                   {isPos && (
-                    <span className="text-emerald-600 dark:text-emerald-400">
+                    <span className="text-indigo-600 dark:text-indigo-400">
                       You will receive {formatCurrency(Math.abs(netBalance), currency)} back
                     </span>
                   )}
@@ -322,7 +322,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
 
               {/* Calculation Formula */}
               <div className="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-800/60">
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block mb-1 flex items-center gap-1.5">
+                <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 block mb-1 flex items-center gap-1.5">
                   <Receipt className="w-4 h-4 text-emerald-600" />
                   <span>Balance Calculation</span>
                 </span>
@@ -346,12 +346,12 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
             {/* Settlement Instructions: WHO OWES WHOM FOR THIS PERSON */}
             <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-900/60 dark:to-slate-900/30 border border-slate-200 dark:border-slate-700/80 my-6">
               <h3 className="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2 mb-3">
-                <Scale className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <Scale className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <span>Settlement Instructions (Who to Pay & Who Owes You)</span>
               </h3>
 
               {mySettlementsToPay.length === 0 && mySettlementsToReceive.length === 0 ? (
-                <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
+                <div className="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   <span>All accounts are balanced for {selectedMember?.name}. No pending payments to make or receive.</span>
                 </div>
@@ -385,21 +385,21 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
                   {/* Payments to receive */}
                   {mySettlementsToReceive.length > 0 && (
                     <div className="space-y-2">
-                      <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
+                      <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">
                         🟢 You Will Receive From:
                       </span>
                       {mySettlementsToReceive.map((s, idx) => (
                         <div
                           key={idx}
-                          className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between"
+                          className="p-3.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between"
                         >
                           <div>
-                            <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">Receive from:</span>
+                            <span className="text-xs text-indigo-700 dark:text-indigo-300 font-medium">Receive from:</span>
                             <span className="block font-bold text-slate-900 dark:text-white text-sm">
                               {s.from_name}
                             </span>
                           </div>
-                          <span className="text-base font-black text-emerald-600 dark:text-emerald-400 bg-white dark:bg-emerald-900/60 px-3 py-1 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                          <span className="text-base font-black text-indigo-600 dark:text-indigo-400 bg-white dark:bg-emerald-900/60 px-3 py-1 rounded-xl border border-emerald-200 dark:border-emerald-800">
                             {formatCurrency(s.amount, currency)}
                           </span>
                         </div>
@@ -467,7 +467,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
                               {eaterCount}
                             </td>
                             <td className="py-3 px-4 whitespace-nowrap">
-                              <span className={`font-semibold ${isPayer ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                              <span className={`font-semibold ${isPayer ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`}>
                                 {getMemberName(meal.paid_by)} {isPayer ? '(You)' : ''}
                               </span>
                             </td>
@@ -497,7 +497,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
       {viewMode === 'all' && (
         <div className="space-y-6">
           {/* Printable Report Header */}
-          <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md print-card">
+          <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md print-card">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-100">
@@ -569,7 +569,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                 Person-Meals
               </span>
-              <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
                 {stats.total_person_meals}
               </div>
             </div>
@@ -580,7 +580,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
             <div className="p-5 border-b border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
-                  <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   <span>Person-Wise Summary</span>
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -653,7 +653,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
                           <span
                             className={`inline-flex items-center font-bold px-2.5 py-1 rounded-lg text-xs ${
                               isMpos
-                                ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60'
+                                ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-emerald-200/60 dark:border-emerald-800/60'
                                 : isMneg
                                 ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-800/60'
                               : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
@@ -667,7 +667,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
 
                         <td className="py-3.5 px-4 text-center font-semibold">
                           {isMpos && (
-                            <span className="text-emerald-600 dark:text-emerald-400">
+                            <span className="text-indigo-600 dark:text-indigo-400">
                               Receive {formatCurrency(Math.abs(m.net_balance), currency)}
                             </span>
                           )}
@@ -693,7 +693,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700/60">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
-                  <Scale className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  <Scale className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   <span>Final Monthly Settlement</span>
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -703,7 +703,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
 
               <button
                 onClick={onOpenSettlementModal}
-                className="no-print inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700 transition-colors"
+                className="no-print inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700 transition-colors"
               >
                 <span>Record Settlement</span>
               </button>
@@ -743,7 +743,7 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
                     </div>
 
                     <div className="text-right">
-                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
+                      <span className="text-sm font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-1 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
                         {formatCurrency(s.amount, currency)}
                       </span>
                     </div>

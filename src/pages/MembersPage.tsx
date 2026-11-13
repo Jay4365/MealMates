@@ -79,12 +79,12 @@ export const MembersPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
               Household Team
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
-            <Users className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+            <Users className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
             <span>Roommates Roster</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -99,7 +99,7 @@ export const MembersPage: React.FC = () => {
               onClick={() => setScope('month')}
               className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
                 scope === 'month'
-                  ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-extrabold'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs font-extrabold'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
               }`}
             >
@@ -109,7 +109,7 @@ export const MembersPage: React.FC = () => {
               onClick={() => setScope('all')}
               className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
                 scope === 'all'
-                  ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-extrabold'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs font-extrabold'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
               }`}
             >
@@ -119,7 +119,7 @@ export const MembersPage: React.FC = () => {
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="shimmer-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold text-xs shadow-md shadow-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+            className="shimmer-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-extrabold text-xs shadow-md shadow-indigo-500/20 active:scale-95 transition-all cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             <span>+ Add Member</span>
@@ -141,7 +141,7 @@ export const MembersPage: React.FC = () => {
               key={member.id}
               className={`glass-card hover-lift rounded-3xl p-5 border transition-all duration-300 flex flex-col justify-between ${
                 member.is_active
-                  ? 'border-slate-200/80 dark:border-white/[0.08] hover:border-emerald-400/50'
+                  ? 'border-slate-200/80 dark:border-white/[0.08] hover:border-indigo-400/50'
                   : 'border-slate-200 dark:border-slate-800 opacity-60 bg-slate-50/50 dark:bg-slate-900/30'
               }`}
             >
@@ -233,7 +233,7 @@ export const MembersPage: React.FC = () => {
                 <div
                   className={`inline-flex items-center gap-1 px-3 py-1 rounded-xl text-sm font-black ${
                     isPos
-                      ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60'
+                      ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-emerald-200/60 dark:border-emerald-800/60'
                       : isNeg
                       ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-800/60'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
@@ -255,7 +255,7 @@ export const MembersPage: React.FC = () => {
           <div className="glass-panel border border-slate-200/80 dark:border-white/[0.12] rounded-3xl shadow-2xl max-w-sm w-full p-6 overflow-hidden animate-scale-in">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-200/60 dark:border-slate-800/80">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-400 text-white flex items-center justify-center shadow-xs">
                   <UserPlus className="w-4 h-4" />
                 </div>
                 <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
@@ -281,7 +281,7 @@ export const MembersPage: React.FC = () => {
                   placeholder="e.g. Vikram"
                   value={newMemberName}
                   onChange={(e) => setNewMemberName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-sm outline-hidden focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-sm outline-hidden focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
                 />
               </div>
 
@@ -296,7 +296,7 @@ export const MembersPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="shimmer-btn px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold text-xs shadow-md shadow-emerald-500/25 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer disabled:opacity-50"
+                  className="shimmer-btn px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-extrabold text-xs shadow-md shadow-indigo-500/25 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? 'Adding...' : 'Add Roommate'}
                 </button>
@@ -337,7 +337,7 @@ export const MembersPage: React.FC = () => {
                   required
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-sm outline-hidden focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-sm outline-hidden focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
                 />
               </div>
 

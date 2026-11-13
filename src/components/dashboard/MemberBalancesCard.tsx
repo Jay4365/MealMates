@@ -20,7 +20,7 @@ export const MemberBalancesCard: React.FC<MemberBalancesCardProps> = ({ onOpenSe
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200/60 dark:border-white/[0.06] gap-3">
         <div>
           <h3 className="font-extrabold text-slate-900 dark:text-white text-lg flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+            <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/20">
               <Users className="w-4 h-4" />
             </div>
             <span>Roommate Balances</span>
@@ -36,7 +36,7 @@ export const MemberBalancesCard: React.FC<MemberBalancesCardProps> = ({ onOpenSe
               onClick={() => setViewScope('month')}
               className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
                 viewScope === 'month'
-                  ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-extrabold'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs font-extrabold'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
               }`}
             >
@@ -46,7 +46,7 @@ export const MemberBalancesCard: React.FC<MemberBalancesCardProps> = ({ onOpenSe
               onClick={() => setViewScope('all')}
               className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
                 viewScope === 'all'
-                  ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-extrabold'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs font-extrabold'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
               }`}
             >
@@ -56,7 +56,7 @@ export const MemberBalancesCard: React.FC<MemberBalancesCardProps> = ({ onOpenSe
 
           <button
             onClick={onOpenSettlement}
-            className="shimmer-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-sm shadow-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+            className="shimmer-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold text-xs shadow-sm shadow-indigo-500/20 active:scale-95 transition-all cursor-pointer"
           >
             <Scale className="w-3.5 h-3.5" />
             <span>Settle Up</span>
@@ -81,7 +81,7 @@ export const MemberBalancesCard: React.FC<MemberBalancesCardProps> = ({ onOpenSe
       {/* Legend Indicator */}
       <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 bg-slate-100/60 dark:bg-slate-800/40 px-3.5 py-1.5 rounded-xl my-3 border border-slate-200/50 dark:border-white/[0.04]">
         <span className="flex items-center gap-1.5 font-medium">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-2xs"></span>
+          <span className="w-2 h-2 rounded-full bg-indigo-500 shadow-2xs"></span>
           <span>Positive (+) = Will get back</span>
         </span>
         <span className="flex items-center gap-1.5 font-medium">
@@ -130,7 +130,7 @@ export const MemberBalancesCard: React.FC<MemberBalancesCardProps> = ({ onOpenSe
                 <div
                   className={`inline-flex items-center gap-1 px-3 py-1 rounded-xl text-sm font-black transition-all ${
                     isPos
-                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                      ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30'
                       : isNeg
                       ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
@@ -143,7 +143,7 @@ export const MemberBalancesCard: React.FC<MemberBalancesCardProps> = ({ onOpenSe
                 </div>
                 <div className="text-[10px] mt-0.5 font-bold">
                   {isPos && (
-                    <span className="text-emerald-600 dark:text-emerald-400">Gets {formatCurrency(Math.abs(b.net_balance), currency)}</span>
+                    <span className="text-indigo-600 dark:text-indigo-400">Gets {formatCurrency(Math.abs(b.net_balance), currency)}</span>
                   )}
                   {isNeg && (
                     <span className="text-rose-600 dark:text-rose-400">Owes {formatCurrency(Math.abs(b.net_balance), currency)}</span>

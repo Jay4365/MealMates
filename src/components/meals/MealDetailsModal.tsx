@@ -68,7 +68,7 @@ export const MealDetailsModal: React.FC<MealDetailsModalProps> = ({ meal, onClos
         {/* Details Content */}
         <div className="p-6 space-y-5">
           {/* Main Numbers Banner */}
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border border-emerald-500/20 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border border-indigo-500/20 flex items-center justify-between">
             <div>
               <span className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Total Bill</span>
               <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-0.5">
@@ -77,7 +77,7 @@ export const MealDetailsModal: React.FC<MealDetailsModalProps> = ({ meal, onClos
             </div>
             <div className="text-right">
               <span className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Per Eater</span>
-              <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight mt-0.5">
+              <div className="text-2xl font-black text-indigo-600 dark:text-indigo-400 tracking-tight mt-0.5">
                 {formatCurrency(perPersonCost, currency)}
               </div>
             </div>
@@ -128,7 +128,7 @@ export const MealDetailsModal: React.FC<MealDetailsModalProps> = ({ meal, onClos
                         <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                           <span>{m.name}</span>
                           {isPayer && (
-                            <span className="text-[10px] bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.2 rounded-md font-extrabold">
+                            <span className="text-[10px] bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.2 rounded-md font-extrabold">
                               Payer
                             </span>
                           )}
@@ -144,7 +144,7 @@ export const MealDetailsModal: React.FC<MealDetailsModalProps> = ({ meal, onClos
                         {ate ? formatCurrency(perPersonCost, currency) : '₹0'}
                       </span>
                       {isPayer ? (
-                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-extrabold">
+                        <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-extrabold">
                           +{formatCurrency(netEffect, currency)}
                         </span>
                       ) : ate ? (
@@ -183,7 +183,7 @@ export const MealDetailsModal: React.FC<MealDetailsModalProps> = ({ meal, onClos
               </button>
               <button
                 onClick={onClose}
-                className="shimmer-btn px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-xs active:scale-95 transition-all cursor-pointer"
+                className="shimmer-btn px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold text-xs shadow-xs active:scale-95 transition-all cursor-pointer"
               >
                 Close
               </button>

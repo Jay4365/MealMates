@@ -70,12 +70,12 @@ const MainApp: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50/70 dark:bg-[#080c14] text-slate-900 dark:text-slate-100 relative transition-colors duration-300">
-      {/* Ambient background glows for cutting-edge depth */}
+    <div className="min-h-screen flex flex-col bg-slate-50/70 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 relative transition-colors duration-300">
+      {/* Animated Aurora ambient glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 left-1/3 w-[500px] h-[500px] bg-emerald-500/10 dark:bg-emerald-500/6 blur-[120px] rounded-full"></div>
-        <div className="absolute top-1/2 -right-40 w-[450px] h-[450px] bg-indigo-500/8 dark:bg-indigo-500/6 blur-[140px] rounded-full"></div>
-        <div className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-teal-500/8 dark:bg-teal-500/5 blur-[130px] rounded-full"></div>
+        <div className="absolute -top-40 left-1/4 w-[600px] h-[600px] bg-indigo-500/12 dark:bg-indigo-500/8 blur-[140px] rounded-full animate-aurora-1"></div>
+        <div className="absolute top-1/2 -right-32 w-[500px] h-[500px] bg-violet-500/10 dark:bg-violet-500/6 blur-[150px] rounded-full animate-aurora-2"></div>
+        <div className="absolute -bottom-32 left-1/3 w-[450px] h-[450px] bg-cyan-500/10 dark:bg-cyan-400/5 blur-[130px] rounded-full animate-aurora-3"></div>
       </div>
 
       {/* Top Navbar */}

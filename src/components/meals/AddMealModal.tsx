@@ -201,7 +201,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 text-slate-900 dark:text-white text-xs font-bold focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 outline-hidden transition-all"
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 text-slate-900 dark:text-white text-xs font-bold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all"
               />
             </div>
 
@@ -256,7 +256,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
                 required
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-black text-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 outline-hidden transition-all"
+                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-black text-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all"
               />
             </div>
           </div>
@@ -268,7 +268,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
                 <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
                   Who Ate?
                 </span>
-                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-black bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-black bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/20">
                   {eaterIds.length} {eaterIds.length === 1 ? 'person' : 'persons'}
                 </span>
               </div>
@@ -276,7 +276,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
                 <button
                   type="button"
                   onClick={selectAll}
-                  className="text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                  className="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
                 >
                   Select All
                 </button>
@@ -302,14 +302,14 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
                     onClick={() => toggleEater(member.id)}
                     className={`flex items-center gap-2.5 p-2.5 rounded-xl border text-left text-xs font-bold transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-900 dark:text-emerald-200 shadow-xs'
+                        ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-900 dark:text-indigo-200 shadow-xs'
                         : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300'
                     }`}
                   >
                     <div
                       className={`w-4 h-4 rounded-md flex items-center justify-center transition-colors ${
                         isSelected
-                          ? 'bg-emerald-600 text-white'
+                          ? 'bg-indigo-600 text-white'
                           : 'border border-slate-300 dark:border-slate-600'
                       }`}
                     >
@@ -324,14 +324,14 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
             {/* Real-time Per Person calculation preview */}
             <div className="mt-3.5 pt-3 border-t border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
-                <Calculator className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <Calculator className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 <span>
                   {numAmount > 0 && eaterIds.length > 0
                     ? `${formatCurrency(numAmount, currency)} ÷ ${eaterIds.length} =`
                     : 'Cost per head:'}
                 </span>
               </div>
-              <div className="font-black text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-xl">
+              <div className="font-black text-sm text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-xl">
                 {formatCurrency(splitDetails.perPersonCost, currency)}
                 <span className="text-[11px] font-normal text-slate-500 dark:text-slate-400"> / head</span>
               </div>
@@ -347,7 +347,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
               value={paidBy}
               onChange={(e) => setPaidBy(e.target.value)}
               required
-              className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 outline-hidden transition-all cursor-pointer"
+              className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all cursor-pointer"
             >
               <option value="" disabled>
                 Select who paid the bill
@@ -370,7 +370,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
               <p className="text-slate-600 dark:text-slate-400">
                 <strong className="text-slate-900 dark:text-white">{payerMember?.name}</strong> paid {formatCurrency(numAmount, currency)}.
                 {splitDetails.balances[paidBy] > 0 ? (
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold ml-1">
+                  <span className="text-indigo-600 dark:text-indigo-400 font-bold ml-1">
                     Will receive {formatCurrency(splitDetails.balances[paidBy], currency)} back.
                   </span>
                 ) : (
@@ -393,7 +393,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
               placeholder="e.g. Swiggy order, Paneer Handi, Grocery rotis..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 outline-hidden transition-all"
+              className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all"
             />
           </div>
 
@@ -409,7 +409,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="shimmer-btn px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 active:scale-95 text-white font-extrabold text-xs shadow-md shadow-emerald-500/25 disabled:opacity-50 transition-all cursor-pointer"
+              className="shimmer-btn px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 active:scale-95 text-white font-extrabold text-xs shadow-md shadow-indigo-500/30 disabled:opacity-50 transition-all cursor-pointer"
             >
               {isSubmitting ? 'Saving...' : editingMeal ? 'Update Meal' : 'Save Meal Entry'}
             </button>
