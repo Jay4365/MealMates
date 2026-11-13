@@ -7,9 +7,7 @@ import {
   FileBarChart2,
   Users,
   Settings,
-  ShieldCheck,
-  Zap,
-  LogOut,
+  Sparkles,
 } from 'lucide-react';
 
 export type NavigationTab = 'dashboard' | 'history' | 'monthly-report' | 'members' | 'settings';
@@ -26,60 +24,58 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectTab,
   onOpenAddMeal,
 }) => {
-  const { user, group, isSupabaseConnected, logout } = useApp();
+  const { group } = useApp();
 
   const navItems = [
     {
       id: 'dashboard' as NavigationTab,
       label: 'Dashboard',
       icon: LayoutDashboard,
-      badge: null,
     },
     {
       id: 'history' as NavigationTab,
-      label: 'History',
+      label: 'Meal History',
       icon: History,
-      badge: null,
     },
     {
       id: 'monthly-report' as NavigationTab,
-      label: 'Monthly Report',
+      label: 'Monthly Statement',
       icon: FileBarChart2,
-      badge: null,
     },
     {
       id: 'members' as NavigationTab,
-      label: 'Members',
+      label: 'Roommates Roster',
       icon: Users,
-      badge: null,
     },
     {
       id: 'settings' as NavigationTab,
       label: 'Settings',
       icon: Settings,
-      badge: null,
     },
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 h-[calc(100vh-4rem)] sticky top-16 transition-colors select-none">
+    <aside className="hidden md:flex flex-col w-64 border-r border-slate-200/70 dark:border-white/[0.06] bg-white/70 dark:bg-[#080c14]/70 backdrop-blur-xl h-[calc(100vh-4rem)] sticky top-16 transition-colors select-none">
       {/* Group Household Card */}
       <div className="p-4 pb-2">
-        <div className="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-200/50 dark:border-emerald-800/30">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
+        <div className="relative overflow-hidden p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border border-emerald-500/20 dark:border-emerald-500/15 shadow-xs">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[10px] font-extrabold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
               Active Household
             </span>
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
           </div>
-          <h3 className="font-bold text-slate-800 dark:text-slate-100 text-base leading-tight">
+          <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-tight truncate">
             {group.name}
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
-            Currency: <span className="font-semibold text-slate-700 dark:text-slate-300">{group.currency} (INR)</span>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
+            <span>Currency:</span>
+            <span className="font-bold text-slate-800 dark:text-slate-200 bg-white/60 dark:bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-200/60 dark:border-slate-700/60">
+              {group.currency} (INR)
+            </span>
           </p>
         </div>
       </div>
@@ -88,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="px-4 py-2">
         <button
           onClick={onOpenAddMeal}
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-medium text-sm shadow-sm transition-all"
+          className="shimmer-btn w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
         >
           <PlusCircle className="w-4 h-4" />
           <span>+ Add Meal Entry</span>
@@ -96,90 +92,45 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Main Navigation links */}
-      <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-3 space-y-1.5 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;
+
           return (
             <button
               key={item.id}
               onClick={() => onSelectTab(item.id)}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-150 ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer relative group ${
                 isActive
-                  ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200'
+                  ? 'bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-transparent text-emerald-700 dark:text-emerald-400 shadow-xs border border-emerald-500/20 dark:border-emerald-500/20'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50'
               }`}
             >
-              <Icon
-                className={`w-5 h-5 transition-colors ${
-                  isActive
-                    ? 'text-emerald-600 dark:text-emerald-400'
-                    : 'text-slate-400 dark:text-slate-500'
-                }`}
-              />
-              <span className="flex-1 text-left">{item.label}</span>
               {isActive && (
-                <div className="w-1.5 h-4 bg-emerald-600 dark:bg-emerald-400 rounded-full" />
+                <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-emerald-500"></span>
               )}
+              <div className={`p-1.5 rounded-lg transition-colors ${
+                isActive
+                  ? 'bg-emerald-500 text-white shadow-xs'
+                  : 'text-slate-500 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200'
+              }`}>
+                <Icon className="w-4 h-4" />
+              </div>
+              <span className="truncate tracking-wide">{item.label}</span>
             </button>
           );
         })}
       </nav>
 
-      {/* Bottom Status / Profile */}
-      <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
-        {/* Backend Info */}
-        <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-xs">
-          {isSupabaseConnected ? (
-            <>
-              <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-              <div className="truncate">
-                <span className="font-semibold text-slate-700 dark:text-slate-300">Supabase Auth & DB</span>
-                <p className="text-[10px] text-slate-400">Cloud Sync Active</p>
-              </div>
-            </>
-          ) : (
-            <>
-              <Zap className="w-4 h-4 text-amber-500 shrink-0" />
-              <div className="truncate">
-                <span className="font-semibold text-slate-700 dark:text-slate-300">Demo Storage</span>
-                <p className="text-[10px] text-slate-400">Connect in Settings</p>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* User Card */}
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex items-center gap-2.5 truncate">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
-              {user?.name?.charAt(0).toUpperCase() || 'U'}
-            </div>
-            <div className="truncate">
-              <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
-                {user?.name || 'Roommate'}
-              </p>
-              <p className="text-[10px] text-slate-400 truncate">
-                {user?.email || 'roommate@mealmates.app'}
-              </p>
-            </div>
+      {/* Bottom Pro Tip Footer */}
+      <div className="p-4 border-t border-slate-200/60 dark:border-white/[0.06]">
+        <div className="p-3 rounded-xl bg-slate-100/60 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/50 text-[11px] text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300 mb-1">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>Fair Split Magic</span>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={() => onSelectTab('settings')}
-              title="Account Settings"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-            >
-              <Settings className="w-4 h-4" />
-            </button>
-            <button
-              onClick={logout}
-              title="Log out / Switch profile"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
+          <span>Automatic math for lunch, dinner & instant settlements.</span>
         </div>
       </div>
     </aside>

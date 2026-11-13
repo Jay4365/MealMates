@@ -151,28 +151,30 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
   const payerMember = activeMembers.find((m) => m.id === paidBy);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in-up overflow-y-auto">
+      <div className="glass-card rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden my-8 border border-white/80 dark:border-white/[0.1] animate-scale-in">
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
-          <div className="flex items-center gap-2.5">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-              mealType === 'lunch' ? 'bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400' : 'bg-indigo-100 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400'
+        <div className="px-6 py-4.5 border-b border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between bg-white/50 dark:bg-slate-800/50">
+          <div className="flex items-center gap-3">
+            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-md ${
+              mealType === 'lunch'
+                ? 'bg-gradient-to-tr from-amber-500 to-orange-400 text-white shadow-amber-500/25'
+                : 'bg-gradient-to-tr from-indigo-600 to-violet-600 text-white shadow-indigo-500/25'
             }`}>
               {mealType === 'lunch' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              <h2 className="text-lg font-black text-slate-900 dark:text-white">
                 {editingMeal ? 'Edit Meal Entry' : 'Add Meal Entry'}
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Split food expense automatically
+              <p className="text-xs text-slate-400 dark:text-slate-500">
+                Split food expense automatically across eaters
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -181,7 +183,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {errorMsg && (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300 text-xs font-medium">
+            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300 text-xs font-semibold">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMsg}</span>
             </div>
@@ -191,28 +193,28 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Date */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Date
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                Meal Date
               </label>
               <input
                 type="date"
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-hidden transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 text-slate-900 dark:text-white text-xs font-bold focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 outline-hidden transition-all"
               />
             </div>
 
             {/* Meal Type Switcher */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                 Meal Type
               </label>
-              <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800">
+              <div className="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200/60 dark:border-slate-700/60">
                 <button
                   type="button"
                   onClick={() => setMealType('lunch')}
-                  className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={`flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     mealType === 'lunch'
                       ? 'bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-400 shadow-xs'
                       : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
@@ -224,7 +226,7 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setMealType('dinner')}
-                  className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={`flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     mealType === 'dinner'
                       ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-xs'
                       : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
@@ -239,57 +241,57 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
 
           {/* Amount Paid */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
               Total Meal Amount
             </label>
-            <div className="relative rounded-xl shadow-xs">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 font-bold text-base">
+            <div className="relative rounded-2xl shadow-xs">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 font-black text-xl">
                 {currency}
               </div>
               <input
                 type="number"
                 step="any"
                 min="1"
-                placeholder="e.g. 400"
+                placeholder="0"
                 required
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-hidden transition-colors"
+                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-black text-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 outline-hidden transition-all"
               />
             </div>
           </div>
 
           {/* Who Ate? (Checkboxes) */}
-          <div className="border border-slate-200 dark:border-slate-700/80 rounded-2xl p-4 bg-slate-50/40 dark:bg-slate-800/40">
+          <div className="border border-slate-200/80 dark:border-white/[0.08] rounded-2xl p-4 bg-slate-50/60 dark:bg-slate-800/40">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
                   Who Ate?
                 </span>
-                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">
-                  {eaterIds.length} {eaterIds.length === 1 ? 'person' : 'persons'} ate
+                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-black bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+                  {eaterIds.length} {eaterIds.length === 1 ? 'person' : 'persons'}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-2 text-xs font-bold">
                 <button
                   type="button"
                   onClick={selectAll}
-                  className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
+                  className="text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
                 >
-                  All
+                  Select All
                 </button>
                 <span className="text-slate-300 dark:text-slate-600">•</span>
                 <button
                   type="button"
                   onClick={deselectAll}
-                  className="text-slate-500 hover:underline font-medium"
+                  className="text-slate-500 hover:underline cursor-pointer"
                 >
                   Clear
                 </button>
               </div>
             </div>
 
-            {/* Members checkboxes list */}
+            {/* Members checkboxes grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {activeMembers.map((member) => {
                 const isSelected = eaterIds.includes(member.id);
@@ -298,14 +300,14 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
                     key={member.id}
                     type="button"
                     onClick={() => toggleEater(member.id)}
-                    className={`flex items-center gap-2 p-2.5 rounded-xl border text-left text-xs font-semibold transition-all ${
+                    className={`flex items-center gap-2.5 p-2.5 rounded-xl border text-left text-xs font-bold transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 shadow-xs'
+                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-900 dark:text-emerald-200 shadow-xs'
                         : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300'
                     }`}
                   >
                     <div
-                      className={`w-4 h-4 rounded flex items-center justify-center transition-colors ${
+                      className={`w-4 h-4 rounded-md flex items-center justify-center transition-colors ${
                         isSelected
                           ? 'bg-emerald-600 text-white'
                           : 'border border-slate-300 dark:border-slate-600'
@@ -321,37 +323,37 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
 
             {/* Real-time Per Person calculation preview */}
             <div className="mt-3.5 pt-3 border-t border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
                 <Calculator className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>
                   {numAmount > 0 && eaterIds.length > 0
                     ? `${formatCurrency(numAmount, currency)} ÷ ${eaterIds.length} =`
-                    : 'Split per person:'}
+                    : 'Cost per head:'}
                 </span>
               </div>
-              <div className="font-bold text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-lg">
+              <div className="font-black text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-xl">
                 {formatCurrency(splitDetails.perPersonCost, currency)}
-                <span className="text-[11px] font-normal text-slate-500 dark:text-slate-400"> / person</span>
+                <span className="text-[11px] font-normal text-slate-500 dark:text-slate-400"> / head</span>
               </div>
             </div>
           </div>
 
           {/* Paid By */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Who Paid?
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+              Who Paid for this?
             </label>
             <select
               value={paidBy}
               onChange={(e) => setPaidBy(e.target.value)}
               required
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-hidden transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 outline-hidden transition-all cursor-pointer"
             >
               <option value="" disabled>
-                Select who paid
+                Select who paid the bill
               </option>
               {activeMembers.map((m) => (
-                <option key={m.id} value={m.id}>
+                <option key={m.id} value={m.id} className="dark:bg-slate-800">
                   {m.name} {m.name.toLowerCase() === user?.name?.toLowerCase() ? '(You)' : ''}
                 </option>
               ))}
@@ -360,22 +362,22 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
 
           {/* Live Impact Preview */}
           {numAmount > 0 && eaterIds.length > 0 && paidBy && (
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs space-y-1.5">
-              <div className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wider">
+            <div className="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-xs space-y-1.5">
+              <div className="flex items-center gap-1.5 font-extrabold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wider">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>Instant Calculation Breakdown</span>
+                <span>Instant Split Impact</span>
               </div>
               <p className="text-slate-600 dark:text-slate-400">
                 <strong className="text-slate-900 dark:text-white">{payerMember?.name}</strong> paid {formatCurrency(numAmount, currency)}.
                 {splitDetails.balances[paidBy] > 0 ? (
-                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold ml-1">
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold ml-1">
                     Will receive {formatCurrency(splitDetails.balances[paidBy], currency)} back.
                   </span>
                 ) : (
                   <span className="text-slate-600 dark:text-slate-400 ml-1">Own share is {formatCurrency(splitDetails.perPersonCost, currency)}.</span>
                 )}
               </p>
-              <p className="text-slate-500 dark:text-slate-400 text-[11px]">
+              <p className="text-slate-400 dark:text-slate-500 text-[11px]">
                 Other eaters ({eaterIds.filter(id => id !== paidBy).map(id => activeMembers.find(m => m.id === id)?.name).join(', ')}) owe {formatCurrency(splitDetails.perPersonCost, currency)} each.
               </p>
             </div>
@@ -383,31 +385,31 @@ export const AddMealModal: React.FC<AddMealModalProps> = ({
 
           {/* Notes (Optional) */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Notes (Optional)
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+              Notes / Description (Optional)
             </label>
             <input
               type="text"
-              placeholder="e.g. Biryani, Rotis, Swiggy order..."
+              placeholder="e.g. Swiggy order, Paneer Handi, Grocery rotis..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-hidden transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 outline-hidden transition-all"
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-2 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-200/60 dark:border-white/[0.06]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-emerald-600/20 disabled:opacity-50 transition-all"
+              className="shimmer-btn px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 active:scale-95 text-white font-extrabold text-xs shadow-md shadow-emerald-500/25 disabled:opacity-50 transition-all cursor-pointer"
             >
               {isSubmitting ? 'Saving...' : editingMeal ? 'Update Meal' : 'Save Meal Entry'}
             </button>

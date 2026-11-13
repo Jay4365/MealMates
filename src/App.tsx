@@ -70,12 +70,19 @@ const MainApp: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50/50 dark:bg-slate-950 transition-colors">
+    <div className="min-h-screen flex flex-col bg-slate-50/70 dark:bg-[#080c14] text-slate-900 dark:text-slate-100 relative transition-colors duration-300">
+      {/* Ambient background glows for cutting-edge depth */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute -top-40 left-1/3 w-[500px] h-[500px] bg-emerald-500/10 dark:bg-emerald-500/6 blur-[120px] rounded-full"></div>
+        <div className="absolute top-1/2 -right-40 w-[450px] h-[450px] bg-indigo-500/8 dark:bg-indigo-500/6 blur-[140px] rounded-full"></div>
+        <div className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-teal-500/8 dark:bg-teal-500/5 blur-[130px] rounded-full"></div>
+      </div>
+
       {/* Top Navbar */}
       <Navbar onOpenAddMeal={() => handleOpenAddMeal('lunch')} />
 
       {/* Main Body */}
-      <div className="flex-1 flex max-w-7xl w-full mx-auto">
+      <div className="flex-1 flex max-w-7xl w-full mx-auto relative z-10">
         {/* Desktop Sidebar */}
         <Sidebar
           currentTab={currentTab}

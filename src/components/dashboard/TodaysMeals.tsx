@@ -41,51 +41,51 @@ export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewM
   });
 
   return (
-    <div className="bg-white dark:bg-slate-800/90 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/80 shadow-xs flex flex-col h-full">
+    <div className="glass-card rounded-3xl p-6 relative overflow-hidden flex flex-col h-full animate-fade-in-up">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700/60">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-200/60 dark:border-white/[0.06]">
         <div>
-          <h3 className="font-bold text-slate-900 dark:text-white text-lg flex items-center gap-2">
+          <h3 className="font-extrabold text-slate-900 dark:text-white text-lg flex items-center gap-2.5">
             <span>{isCurrentMonth ? "Today's Meals" : "Meals Overview"}</span>
-            <span className="text-xs font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">
+            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
               {isCurrentMonth ? formattedDate : selectedMonthLabel}
             </span>
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            {isCurrentMonth ? "Real-time split for lunch and dinner" : `Latest lunch and dinner for ${selectedMonthLabel}`}
+            {isCurrentMonth ? "Real-time split for lunch and dinner" : `Latest lunch and dinner entries for ${selectedMonthLabel}`}
           </p>
         </div>
         <button
           onClick={() => onOpenAddMeal()}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 px-2.5 py-1.5 rounded-lg transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 px-3 py-1.5 rounded-xl transition-all cursor-pointer border border-emerald-500/20"
         >
-          <Plus className="w-3.5 h-3.5" />
+          <Plus className="w-3.5 h-3.5 stroke-[3]" />
           <span>+ Add Entry</span>
         </button>
       </div>
 
       {/* Meals Container */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 flex-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5 flex-1">
         {/* Lunch Card */}
-        <div className="rounded-xl border border-amber-200/70 dark:border-amber-900/40 bg-gradient-to-b from-amber-50/50 to-white dark:from-amber-950/10 dark:to-slate-800/60 p-4 flex flex-col justify-between relative overflow-hidden">
+        <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-b from-amber-500/[0.08] via-orange-500/[0.03] to-white dark:to-slate-900/60 p-4.5 flex flex-col justify-between relative overflow-hidden hover-lift transition-all">
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                <Sun className="w-4 h-4" />
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center shadow-md shadow-amber-500/20">
+                <Sun className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-sm">
+                <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
                   Lunch
                 </h4>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                  {isCurrentMonth ? 'Afternoon meal' : (lunchMeal ? `Latest: ${lunchMeal.date}` : 'Afternoon meal')}
+                <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                  {isCurrentMonth ? 'Afternoon meal' : (lunchMeal ? `Recorded: ${lunchMeal.date}` : 'Afternoon meal')}
                 </span>
               </div>
             </div>
             {lunchMeal && (
               <button
                 onClick={() => onViewMeal(lunchMeal)}
-                className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/80 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 title="View breakdown"
               >
                 <Eye className="w-4 h-4" />
@@ -94,73 +94,73 @@ export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewM
           </div>
 
           {lunchMeal ? (
-            <div className="mt-4 space-y-2.5">
+            <div className="mt-4 space-y-3">
               <div className="flex items-baseline justify-between">
-                <span className="text-xs text-slate-500 dark:text-slate-400">Total Amount:</span>
-                <span className="text-base font-bold text-slate-900 dark:text-white">
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Bill:</span>
+                <span className="text-xl font-black text-slate-900 dark:text-white">
                   {formatCurrency(lunchMeal.total_amount, currency)}
                 </span>
               </div>
 
-              <div className="flex items-baseline justify-between text-xs">
-                <span className="text-slate-500 dark:text-slate-400">People Ate:</span>
-                <span className="font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Eaters:</span>
+                <span className="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
                   <UserCheck className="w-3.5 h-3.5" />
                   {lunchMeal.eater_ids.length} persons
                 </span>
               </div>
 
-              <div className="flex items-baseline justify-between text-xs bg-amber-100/60 dark:bg-amber-950/40 p-2 rounded-lg">
-                <span className="text-amber-900 dark:text-amber-300 font-medium">Per Person:</span>
-                <span className="font-bold text-amber-800 dark:text-amber-300 text-sm">
+              <div className="flex items-baseline justify-between text-xs bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/20 p-2.5 rounded-xl">
+                <span className="text-amber-800 dark:text-amber-300 font-bold">Split Per Person:</span>
+                <span className="font-black text-amber-700 dark:text-amber-300 text-sm">
                   {formatCurrency(lunchMeal.total_amount / (lunchMeal.eater_ids.length || 1), currency)}
-                  <span className="text-[10px] font-normal"> / person</span>
+                  <span className="text-[10px] font-normal text-amber-600/80"> / head</span>
                 </span>
               </div>
 
-              <div className="pt-2 border-t border-amber-200/50 dark:border-amber-900/30 flex items-center justify-between text-xs">
-                <span className="text-slate-500 dark:text-slate-400">Paid by:</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-700 px-2 py-0.5 rounded shadow-xs">
+              <div className="pt-2.5 border-t border-amber-500/15 flex items-center justify-between text-xs">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Paid by:</span>
+                <span className="font-bold text-slate-800 dark:text-slate-100 bg-white/80 dark:bg-slate-800 px-2.5 py-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60 shadow-2xs">
                   {getMemberName(lunchMeal.paid_by)}
                 </span>
               </div>
             </div>
           ) : (
-            <div className="my-6 text-center py-4">
+            <div className="my-5 text-center py-4">
               <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
-                No lunch recorded {isCurrentMonth ? 'today' : `in ${selectedMonthLabel}`}
+                No lunch logged {isCurrentMonth ? 'today' : `in ${selectedMonthLabel}`}
               </p>
               <button
                 onClick={() => onOpenAddMeal('lunch')}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 dark:hover:bg-amber-900/60 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 transition-all cursor-pointer active:scale-95 shadow-xs"
               >
-                <Plus className="w-3.5 h-3.5" />
-                Add Lunch
+                <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                Log Lunch Entry
               </button>
             </div>
           )}
         </div>
 
         {/* Dinner Card */}
-        <div className="rounded-xl border border-indigo-200/70 dark:border-indigo-900/40 bg-gradient-to-b from-indigo-50/50 to-white dark:from-indigo-950/10 dark:to-slate-800/60 p-4 flex flex-col justify-between relative overflow-hidden">
+        <div className="rounded-2xl border border-indigo-500/20 bg-gradient-to-b from-indigo-500/[0.08] via-purple-500/[0.03] to-white dark:to-slate-900/60 p-4.5 flex flex-col justify-between relative overflow-hidden hover-lift transition-all">
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                <Moon className="w-4 h-4" />
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-violet-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
+                <Moon className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-sm">
+                <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
                   Dinner
                 </h4>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                  {isCurrentMonth ? 'Evening meal' : (dinnerMeal ? `Latest: ${dinnerMeal.date}` : 'Evening meal')}
+                <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                  {isCurrentMonth ? 'Evening meal' : (dinnerMeal ? `Recorded: ${dinnerMeal.date}` : 'Evening meal')}
                 </span>
               </div>
             </div>
             {dinnerMeal && (
               <button
                 onClick={() => onViewMeal(dinnerMeal)}
-                className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/80 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 title="View breakdown"
               >
                 <Eye className="w-4 h-4" />
@@ -169,48 +169,48 @@ export const TodaysMeals: React.FC<TodaysMealsProps> = ({ onOpenAddMeal, onViewM
           </div>
 
           {dinnerMeal ? (
-            <div className="mt-4 space-y-2.5">
+            <div className="mt-4 space-y-3">
               <div className="flex items-baseline justify-between">
-                <span className="text-xs text-slate-500 dark:text-slate-400">Total Amount:</span>
-                <span className="text-base font-bold text-slate-900 dark:text-white">
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Bill:</span>
+                <span className="text-xl font-black text-slate-900 dark:text-white">
                   {formatCurrency(dinnerMeal.total_amount, currency)}
                 </span>
               </div>
 
-              <div className="flex items-baseline justify-between text-xs">
-                <span className="text-slate-500 dark:text-slate-400">People Ate:</span>
-                <span className="font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Eaters:</span>
+                <span className="font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-1 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">
                   <UserCheck className="w-3.5 h-3.5" />
                   {dinnerMeal.eater_ids.length} persons
                 </span>
               </div>
 
-              <div className="flex items-baseline justify-between text-xs bg-indigo-100/60 dark:bg-indigo-950/40 p-2 rounded-lg">
-                <span className="text-indigo-900 dark:text-indigo-300 font-medium">Per Person:</span>
-                <span className="font-bold text-indigo-800 dark:text-indigo-300 text-sm">
+              <div className="flex items-baseline justify-between text-xs bg-indigo-500/10 dark:bg-indigo-500/15 border border-indigo-500/20 p-2.5 rounded-xl">
+                <span className="text-indigo-800 dark:text-indigo-300 font-bold">Split Per Person:</span>
+                <span className="font-black text-indigo-700 dark:text-indigo-300 text-sm">
                   {formatCurrency(dinnerMeal.total_amount / (dinnerMeal.eater_ids.length || 1), currency)}
-                  <span className="text-[10px] font-normal"> / person</span>
+                  <span className="text-[10px] font-normal text-indigo-600/80"> / head</span>
                 </span>
               </div>
 
-              <div className="pt-2 border-t border-indigo-200/50 dark:border-indigo-900/30 flex items-center justify-between text-xs">
-                <span className="text-slate-500 dark:text-slate-400">Paid by:</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-700 px-2 py-0.5 rounded shadow-xs">
+              <div className="pt-2.5 border-t border-indigo-500/15 flex items-center justify-between text-xs">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Paid by:</span>
+                <span className="font-bold text-slate-800 dark:text-slate-100 bg-white/80 dark:bg-slate-800 px-2.5 py-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60 shadow-2xs">
                   {getMemberName(dinnerMeal.paid_by)}
                 </span>
               </div>
             </div>
           ) : (
-            <div className="my-6 text-center py-4">
+            <div className="my-5 text-center py-4">
               <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
-                No dinner recorded {isCurrentMonth ? 'today' : `in ${selectedMonthLabel}`}
+                No dinner logged {isCurrentMonth ? 'today' : `in ${selectedMonthLabel}`}
               </p>
               <button
                 onClick={() => onOpenAddMeal('dinner')}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-indigo-700 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-950/60 hover:bg-indigo-200 dark:hover:bg-indigo-900/60 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 transition-all cursor-pointer active:scale-95 shadow-xs"
               >
-                <Plus className="w-3.5 h-3.5" />
-                Add Dinner
+                <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                Log Dinner Entry
               </button>
             </div>
           )}

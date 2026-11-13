@@ -108,30 +108,35 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-150">
+    <div className="space-y-6 sm:space-y-8 animate-fade-in-up">
       {/* Header with Month Selector & Export Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 no-print">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+              Financial Breakdown
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
             <FileBarChart2 className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
-            <span>Monthly Report & Person-Wise Statement</span>
+            <span>Monthly Report & Statement</span>
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Complete person-wise expense breakdown, personal ledger, and who owes whom
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Person-wise expense breakdown, personal ledger, and who owes whom.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Month Selector */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs">
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-white/[0.08] shadow-xs backdrop-blur-md">
             <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="bg-transparent text-sm font-semibold text-slate-800 dark:text-slate-200 outline-hidden cursor-pointer"
+              className="bg-transparent text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 outline-hidden cursor-pointer"
             >
               {monthOptions.map((opt) => (
-                <option key={opt.key} value={opt.key} className="dark:bg-slate-800">
+                <option key={opt.key} value={opt.key} className="dark:bg-slate-900">
                   {opt.label}
                 </option>
               ))}
@@ -141,16 +146,16 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
           {/* Export CSV */}
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-xs transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 text-xs font-bold shadow-xs transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
-            <span>CSV</span>
+            <span>Export CSV</span>
           </button>
 
           {/* Download PDF / Print */}
           <button
             onClick={handlePrintPDF}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm shadow-emerald-600/20 active:scale-95 transition-all"
+            className="shimmer-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-extrabold shadow-sm shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
           >
             <Printer className="w-4 h-4" />
             <span>Print / PDF</span>
@@ -159,12 +164,12 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
       </div>
 
       {/* View Switcher: Personal Statement vs All Roommates */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 w-fit no-print">
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-white/[0.08] w-fit no-print backdrop-blur-md">
         <button
           onClick={() => setViewMode('personal')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             viewMode === 'personal'
-              ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-xs'
+              ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-extrabold'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -174,9 +179,9 @@ export const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ onOpenSett
 
         <button
           onClick={() => setViewMode('all')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             viewMode === 'all'
-              ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-xs'
+              ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs font-extrabold'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
